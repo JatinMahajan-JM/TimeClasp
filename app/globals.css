@@ -36,17 +36,23 @@ body {
 .pie {
   width: 200px;
   height: 200px;
-  /* background-image: conic-gradient(green 10%, red 0); */
   border-radius: 50%;
-  /* percentage: 10%; */
 }
 
+/* small */
 .pie2 {
   top: 3px;
   left: 3px;
   width: 194px;
   height: 194px;
-  /* background-image: conic-gradient(green 10%, red 0); */
   border-radius: 50%;
-  /* percentage: 10%; */
 }
+
+/* large */
+/* .pie2 {
+  top: 10px;
+  left: 10px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+} */
