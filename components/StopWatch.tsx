@@ -54,29 +54,38 @@ export default function StopWatch() {
     };
   }, [isActive]);
 
+  interface Subtask {
+    id: number;
+    task: string;
+  }
   const taskNameRef = useRef<HTMLInputElement>(null);
-  const subTasksRef = useRef<HTMLTextAreaElement>(null);
+  const subTasksRef = useRef<HTMLInputElement>(null);
   // const taskType = useRef<HTMLSelectElement>(null);
   const dueDateRef = useRef<HTMLInputElement>(null);
   const priorityRef = useRef<HTMLSelectElement>(null);
   const repeatRef = useRef<HTMLSelectElement>(null);
   const [taskType, setTaskType] = useState(false);
   const [subTaskToggle, setSubTaskToggle] = useState(false);
+  const [subTasks, setSubTasks] = useState<Subtask[]>([]);
 
   const newTaskHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    // const newTaskHandler = (FormData: FormData) => {
+    // console.log(FormData);
+
     event.preventDefault();
-    fetch("/api/task/addNewTask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        taskName: taskNameRef.current?.value,
-        subTasks: subTasksRef.current?.value,
-        taskType,
-        priority: priorityRef.current?.value,
-        dueDate: dueDateRef.current?.value,
-        repeat: repeatRef.current?.value,
-      }),
-    });
+    console.log(event, event.type);
+    // fetch("/api/task/addNewTask", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({
+    //     taskName: taskNameRef.current?.value,
+    //     subTasks: subTasksRef.current?.value,
+    //     taskType,
+    //     priority: priorityRef.current?.value,
+    //     dueDate: dueDateRef.current?.value,
+    //     repeat: repeatRef.current?.value,
+    //   }),
+    // });
   };
 
   const taskTypeHandler = (event: MouseEvent<HTMLDivElement>) => {
@@ -85,6 +94,15 @@ export default function StopWatch() {
       if (event.target.classList.contains("flexible-hours")) setTaskType(true);
       else setTaskType(false);
     }
+  };
+
+  const handleSubTask = () => {
+    const newId = subTasks.length + 1;
+    const newSubtaskObj: Subtask = {
+      id: newId,
+      task: subTasksRef.current?.value!,
+    };
+    setSubTasks((prev) => [...prev, newSubtaskObj]);
   };
 
   return (
@@ -120,9 +138,21 @@ export default function StopWatch() {
             >
               +
             </button>
-            {subTaskToggle ? <input type="text" /> : ""}
+            {subTasks.map((item) => (
+              <input type="text" defaultValue={item.task} key={item.id} />
+            ))}
+            {subTaskToggle ? (
+              <>
+                <input type="text" ref={subTasksRef} />
+                <button type="button" onClick={handleSubTask}>
+                  Add subtask
+                </button>
+              </>
+            ) : (
+              ""
+            )}
           </div>
-          <div>
+          <div onClick={taskTypeHandler}>
             <button type="button" className="flexible-hours">
               Flexible Hours
             </button>
