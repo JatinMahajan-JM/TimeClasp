@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, MouseEvent } from "react";
 
 export default function StopWatch() {
   const endTime = "14:50";
@@ -54,6 +54,39 @@ export default function StopWatch() {
     };
   }, [isActive]);
 
+  const taskNameRef = useRef<HTMLInputElement>(null);
+  const subTasksRef = useRef<HTMLTextAreaElement>(null);
+  // const taskType = useRef<HTMLSelectElement>(null);
+  const dueDateRef = useRef<HTMLInputElement>(null);
+  const priorityRef = useRef<HTMLSelectElement>(null);
+  const repeatRef = useRef<HTMLSelectElement>(null);
+  const [taskType, setTaskType] = useState(false);
+  const [subTaskToggle, setSubTaskToggle] = useState(false);
+
+  const newTaskHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    fetch("/api/task/addNewTask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        taskName: taskNameRef.current?.value,
+        subTasks: subTasksRef.current?.value,
+        taskType,
+        priority: priorityRef.current?.value,
+        dueDate: dueDateRef.current?.value,
+        repeat: repeatRef.current?.value,
+      }),
+    });
+  };
+
+  const taskTypeHandler = (event: MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    if (event.target instanceof HTMLElement) {
+      if (event.target.classList.contains("flexible-hours")) setTaskType(true);
+      else setTaskType(false);
+    }
+  };
+
   return (
     <>
       <div className="relative grid justify-center content-center h-64">
@@ -78,28 +111,39 @@ export default function StopWatch() {
       </div>
       {/* <input type="date" /> */}
       <section>
-        <form action="" className="flex flex-col w-1/4 gap-2">
+        <form onSubmit={newTaskHandler} className="flex flex-col w-1/4 gap-2">
           <div className="flex">
-            <input type="text" placeholder="Task Name" />
-            <button>+</button>
+            <input type="text" placeholder="Task Name" ref={taskNameRef} />
+            <button
+              type="button"
+              onClick={() => setSubTaskToggle((prev) => !prev)}
+            >
+              +
+            </button>
+            {subTaskToggle ? <input type="text" /> : ""}
           </div>
           <div>
-            <button>Flexible Hours</button>
-            <button>Strict Hours</button>
+            <button type="button" className="flexible-hours">
+              Flexible Hours
+            </button>
+            <button type="button" className="strict-hours">
+              Strict Hours
+            </button>
           </div>
-          <select name="Priority" id="">
+          <select name="Priority" id="" ref={priorityRef}>
             <option value="p1">1</option>
             <option value="p1">1</option>
             <option value="p1">1</option>
             <option value="p1">1</option>
           </select>
-          <input type="date" />
-          <select name="Repeat" id="">
+          <input type="date" ref={dueDateRef} />
+          <select name="Repeat" id="" ref={repeatRef}>
             <option value="p1">1</option>
             <option value="p1">1</option>
             <option value="p1">1</option>
             <option value="p1">1</option>
           </select>
+          <button type="submit">ADD</button>
         </form>
       </section>
     </>

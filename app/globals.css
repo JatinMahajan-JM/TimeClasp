@@ -56,3 +56,7 @@ body {
   height: 180px;
   border-radius: 50%;
 } */
+
+input {
+  color: black;
+}
