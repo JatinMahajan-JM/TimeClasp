@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef, MouseEvent } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  MouseEvent,
+  KeyboardEvent,
+} from "react";
 
 export default function StopWatch() {
   const endTime = "14:50";
@@ -64,6 +70,8 @@ export default function StopWatch() {
   const dueDateRef = useRef<HTMLInputElement>(null);
   const priorityRef = useRef<HTMLSelectElement>(null);
   const repeatRef = useRef<HTMLSelectElement>(null);
+  const startTimeRef = useRef<HTMLInputElement>(null);
+  const endTimeRef = useRef<HTMLInputElement>(null);
   const [taskType, setTaskType] = useState(false);
   const [subTaskToggle, setSubTaskToggle] = useState(false);
   const [subTasks, setSubTasks] = useState<Subtask[]>([]);
@@ -73,19 +81,21 @@ export default function StopWatch() {
     // console.log(FormData);
 
     event.preventDefault();
-    console.log(event, event.type);
-    // fetch("/api/task/addNewTask", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     taskName: taskNameRef.current?.value,
-    //     subTasks: subTasksRef.current?.value,
-    //     taskType,
-    //     priority: priorityRef.current?.value,
-    //     dueDate: dueDateRef.current?.value,
-    //     repeat: repeatRef.current?.value,
-    //   }),
-    // });
+    // console.log(subTasksRef.current?.value);
+    fetch("/api/task/addNewTask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        taskName: taskNameRef.current?.value,
+        subTasks: subTasks,
+        taskType,
+        priority: priorityRef.current?.value,
+        dueDate: dueDateRef.current?.value,
+        repeat: repeatRef.current?.value,
+        startTime: startTimeRef.current?.value,
+        endTime: endTimeRef.current?.value,
+      }),
+    });
   };
 
   const taskTypeHandler = (event: MouseEvent<HTMLDivElement>) => {
@@ -173,6 +183,14 @@ export default function StopWatch() {
             <option value="p1">1</option>
             <option value="p1">1</option>
           </select>
+          {taskType === false ? (
+            <>
+              <input type="time" ref={startTimeRef} />
+              <input type="time" ref={endTimeRef} />
+            </>
+          ) : (
+            ""
+          )}
           <button type="submit">ADD</button>
         </form>
       </section>

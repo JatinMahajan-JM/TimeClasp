@@ -21,6 +21,12 @@ const taskSchema = new mongoose.Schema({
     },
     repeat: {
         type: String
+    },
+    startTime: {
+        type: String
+    },
+    endTime: {
+        type: String
     }
 })
 
