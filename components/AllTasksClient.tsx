@@ -2,13 +2,16 @@
 
 interface AllTaskProps {
   data: [{ [key: string]: any }];
+  handleClick: (id: string) => void;
 }
 
-export default function AllTasksClient({ data }: AllTaskProps) {
+export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
   return (
     <>
       {data.map((task) => (
-        <h1 key={task._id}>{task.taskName}</h1>
+        <div key={task._id} onClick={() => handleClick(task._id)}>
+          {task.taskName}
+        </div>
       ))}
     </>
   );

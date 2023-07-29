@@ -1,8 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useRef, MouseEvent } from "react";
+import AllTasksClient from "./AllTasksClient";
 
-export default function StopWatch({ children }: { children: React.ReactNode }) {
+interface TimerProps {
+  data: [{ [key: string]: any }];
+}
+
+export default function StopWatch({ data }: TimerProps) {
   const endTime = "14:50";
   const [value, setValue] = useState(50);
   const [seconds, setSeconds] = useState(0);
@@ -69,6 +74,7 @@ export default function StopWatch({ children }: { children: React.ReactNode }) {
   const [taskType, setTaskType] = useState(false);
   const [subTaskToggle, setSubTaskToggle] = useState(false);
   const [subTasks, setSubTasks] = useState<Subtask[]>([]);
+  const [selectedTask, setSelectedTask] = useState<{ [key: string]: any }>();
 
   const newTaskHandler = (event: React.FormEvent<HTMLFormElement>) => {
     // const newTaskHandler = (FormData: FormData) => {
@@ -109,6 +115,12 @@ export default function StopWatch({ children }: { children: React.ReactNode }) {
     setSubTasks((prev) => [...prev, newSubtaskObj]);
   };
 
+  const handleTaskClick = (id: string) => {
+    const selectedItem = data.find((task) => task._id === id);
+    setSelectedTask(selectedItem);
+  };
+  console.log(selectedTask);
+
   return (
     <>
       <div className="relative grid justify-center content-center h-64">
@@ -133,7 +145,7 @@ export default function StopWatch({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* All Tasks */}
-      {children}
+      <AllTasksClient data={data} handleClick={handleTaskClick} />
 
       {/* Form for adding new task */}
       <section>
