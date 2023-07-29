@@ -1,14 +1,8 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  MouseEvent,
-  KeyboardEvent,
-} from "react";
+import React, { useState, useEffect, useRef, MouseEvent } from "react";
 
-export default function StopWatch() {
+export default function StopWatch({ children }: { children: React.ReactNode }) {
   const endTime = "14:50";
   const [value, setValue] = useState(50);
   const [seconds, setSeconds] = useState(0);
@@ -137,7 +131,11 @@ export default function StopWatch() {
           {formatTime(seconds)}
         </div>
       </div>
-      {/* <input type="date" /> */}
+
+      {/* All Tasks */}
+      {children}
+
+      {/* Form for adding new task */}
       <section>
         <form onSubmit={newTaskHandler} className="flex flex-col w-1/4 gap-2">
           <div className="flex">

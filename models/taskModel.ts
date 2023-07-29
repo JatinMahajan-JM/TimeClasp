@@ -7,7 +7,8 @@ const taskSchema = new mongoose.Schema({
     },
     subTasks: [
         {
-            type: String,
+            id: { type: Number },
+            task: { type: String }
         }
     ],
     taskType: {
