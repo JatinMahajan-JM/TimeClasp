@@ -1,5 +1,8 @@
+import { connectToDatabase } from "@/dbConfig/dbConfig";
 import taskModel from "@/models/taskModel";
 import { NextRequest, NextResponse } from "next/server";
+
+connectToDatabase();
 
 export async function GET() {
     try {

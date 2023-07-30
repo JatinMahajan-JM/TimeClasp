@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, MouseEvent } from "react";
 import AllTasksClient from "./AllTasksClient";
+import { CloseConfirmation } from "./CloseConfirmation";
 
 interface TimerProps {
   data: [{ [key: string]: any }];
@@ -12,12 +13,24 @@ export default function StopWatch({ data }: TimerProps) {
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [dataState, setDataState] = useState(data);
+  const [selectedTask, setSelectedTask] = useState<{ [key: string]: any }>();
+
   // let data = receivedData;
 
   const handleStartStop = async () => {
-    setIsActive((prevIsActive) => !prevIsActive);
+    alert("timer started");
     if (seconds !== 0 && selectedTask) {
-      const updateData = { timeWorked: seconds, timerStartDate: new Date() };
+      interface updateDataType {
+        timeWorked: number;
+        timerStartTime: Number;
+        timerEnded?: boolean;
+      }
+      let updateData: updateDataType = {
+        timeWorked: seconds,
+        timerStartTime: Date.now(),
+      };
+      if (!isActive) updateData.timerEnded = false;
+      else updateData.timerEnded = true;
       const res = await fetch("/api/task", {
         method: "PUT",
         headers: {
@@ -35,29 +48,21 @@ export default function StopWatch({ data }: TimerProps) {
 
       console.log(res, updatedData, dataState);
     }
+    setIsActive((prevIsActive) => !prevIsActive);
   };
 
-  // const handleStartStop = async () => {
-  //   setIsActive((prevIsActive) => !prevIsActive);
-  //   if (seconds !== 0 && selectedTask) {
-  //     const updateData = { timeWorked: seconds };
-  //     const res = await fetch("/api/task", {
-  //       method: "PUT",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ _id: selectedTask?._id, data: updateData }),
-  //     });
-
-  //     const updatedRes = await fetch("/api/task");
-  //     const updatedData = await updatedRes.json();
-  //     console.log(res, updatedData, dataState);
-  //     return updatedData;
-  //   }
-  // };
-
-  // useEffect(() => {
-  // },[isActive])
+  useEffect(() => {
+    if (selectedTask) {
+      if (!selectedTask.timerEnded) {
+        // console.log((Date.now() - selectedTask.timerStartTime) / 1000);
+        setSeconds(
+          (Date.now() - selectedTask.timerStartTime) / 1000 +
+            selectedTask.timeWorked
+        );
+        setIsActive(true);
+      }
+    }
+  }, [selectedTask]);
 
   console.log(seconds, dataState);
   const handleReset = () => {
@@ -78,6 +83,7 @@ export default function StopWatch({ data }: TimerProps) {
   };
 
   // const endTime = "14:50";
+  //calculating time remaining till endtime
   // useEffect(() => {
   //   if (endTime) {
   //     const [hours, minutes] = endTime.split(":").map(Number);
@@ -119,7 +125,7 @@ export default function StopWatch({ data }: TimerProps) {
   const [taskType, setTaskType] = useState(false);
   const [subTaskToggle, setSubTaskToggle] = useState(false);
   const [subTasks, setSubTasks] = useState<Subtask[]>([]);
-  const [selectedTask, setSelectedTask] = useState<{ [key: string]: any }>();
+  // const [selectedTask, setSelectedTask] = useState<{ [key: string]: any }>();
 
   const newTaskHandler = (event: React.FormEvent<HTMLFormElement>) => {
     // const newTaskHandler = (FormData: FormData) => {
@@ -162,6 +168,8 @@ export default function StopWatch({ data }: TimerProps) {
   };
 
   const handleTaskClick = (id: string) => {
+    if (selectedTask?._id === id) return;
+
     const selectedItem = dataState.find((task) => task._id === id);
     setSelectedTask(selectedItem);
     setSeconds(selectedItem?.timeWorked);
@@ -190,10 +198,9 @@ export default function StopWatch({ data }: TimerProps) {
           {formatTime(seconds)}
         </div>
       </div>
-
       {/* All Tasks */}
       <AllTasksClient data={dataState} handleClick={handleTaskClick} />
-
+      <CloseConfirmation />
       {/* Form for adding new task */}
       <section>
         <form onSubmit={newTaskHandler} className="flex flex-col w-1/4 gap-2">

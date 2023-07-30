@@ -36,8 +36,11 @@ const taskSchema = new mongoose.Schema({
     timeAllocated: {
         type: String,
     },
-    timerStartDate: {
-        type: Date
+    timerStartTime: {
+        type: Number,
+    },
+    timerEnded: {
+        type: Boolean
     }
 })
 
