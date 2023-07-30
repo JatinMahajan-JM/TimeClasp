@@ -33,8 +33,11 @@ const taskSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    allocatedTime: {
-        type: Number,
+    timeAllocated: {
+        type: String,
+    },
+    timerStartDate: {
+        type: Date
     }
 })
 

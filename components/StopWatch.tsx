@@ -8,15 +8,58 @@ interface TimerProps {
 }
 
 export default function StopWatch({ data }: TimerProps) {
-  const endTime = "14:50";
   const [value, setValue] = useState(50);
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
+  const [dataState, setDataState] = useState(data);
+  // let data = receivedData;
 
-  const handleStartStop = () => {
+  const handleStartStop = async () => {
     setIsActive((prevIsActive) => !prevIsActive);
+    if (seconds !== 0 && selectedTask) {
+      const updateData = { timeWorked: seconds, timerStartDate: new Date() };
+      const res = await fetch("/api/task", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          _id: selectedTask?._id,
+          data: updateData,
+        }),
+      });
+
+      const updatedRes = await fetch("/api/task");
+      const updatedData = await updatedRes.json();
+      setDataState(updatedData);
+
+      console.log(res, updatedData, dataState);
+    }
   };
 
+  // const handleStartStop = async () => {
+  //   setIsActive((prevIsActive) => !prevIsActive);
+  //   if (seconds !== 0 && selectedTask) {
+  //     const updateData = { timeWorked: seconds };
+  //     const res = await fetch("/api/task", {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ _id: selectedTask?._id, data: updateData }),
+  //     });
+
+  //     const updatedRes = await fetch("/api/task");
+  //     const updatedData = await updatedRes.json();
+  //     console.log(res, updatedData, dataState);
+  //     return updatedData;
+  //   }
+  // };
+
+  // useEffect(() => {
+  // },[isActive])
+
+  console.log(seconds, dataState);
   const handleReset = () => {
     setIsActive(false);
     setSeconds(0);
@@ -34,16 +77,17 @@ export default function StopWatch({ data }: TimerProps) {
     return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   };
 
-  useEffect(() => {
-    if (endTime) {
-      const [hours, minutes] = endTime.split(":").map(Number);
-      const currentDate = new Date(Date.now());
-      currentDate.setHours(hours);
-      currentDate.setMinutes(minutes);
-      console.log(currentDate.getTime() - Date.now());
-      setSeconds((currentDate.getTime() - Date.now()) / 1000);
-    }
-  }, []);
+  // const endTime = "14:50";
+  // useEffect(() => {
+  //   if (endTime) {
+  //     const [hours, minutes] = endTime.split(":").map(Number);
+  //     const currentDate = new Date(Date.now());
+  //     currentDate.setHours(hours);
+  //     currentDate.setMinutes(minutes);
+  //     console.log(currentDate.getTime() - Date.now());
+  //     setSeconds((currentDate.getTime() - Date.now()) / 1000);
+  //   }
+  // }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -71,6 +115,7 @@ export default function StopWatch({ data }: TimerProps) {
   const repeatRef = useRef<HTMLSelectElement>(null);
   const startTimeRef = useRef<HTMLInputElement>(null);
   const endTimeRef = useRef<HTMLInputElement>(null);
+  const timeAllocatedRef = useRef<HTMLInputElement>(null);
   const [taskType, setTaskType] = useState(false);
   const [subTaskToggle, setSubTaskToggle] = useState(false);
   const [subTasks, setSubTasks] = useState<Subtask[]>([]);
@@ -94,6 +139,7 @@ export default function StopWatch({ data }: TimerProps) {
         repeat: repeatRef.current?.value,
         startTime: startTimeRef.current?.value,
         endTime: endTimeRef.current?.value,
+        timeAllocated: timeAllocatedRef.current?.value,
       }),
     });
   };
@@ -116,8 +162,9 @@ export default function StopWatch({ data }: TimerProps) {
   };
 
   const handleTaskClick = (id: string) => {
-    const selectedItem = data.find((task) => task._id === id);
+    const selectedItem = dataState.find((task) => task._id === id);
     setSelectedTask(selectedItem);
+    setSeconds(selectedItem?.timeWorked);
   };
   console.log(selectedTask);
 
@@ -145,7 +192,7 @@ export default function StopWatch({ data }: TimerProps) {
       </div>
 
       {/* All Tasks */}
-      <AllTasksClient data={data} handleClick={handleTaskClick} />
+      <AllTasksClient data={dataState} handleClick={handleTaskClick} />
 
       {/* Form for adding new task */}
       <section>
@@ -201,7 +248,11 @@ export default function StopWatch({ data }: TimerProps) {
           ) : (
             ""
           )}
-          {taskType === true ? <input type="time" min={1} max={12} /> : ""}
+          {taskType === true ? (
+            <input type="time" min="00:00" max="12:00" ref={timeAllocatedRef} />
+          ) : (
+            ""
+          )}
           <button type="submit">ADD</button>
         </form>
       </section>

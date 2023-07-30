@@ -1,5 +1,5 @@
 import taskModel from "@/models/taskModel";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
     try {
@@ -8,5 +8,17 @@ export async function GET() {
         return NextResponse.json(allTasks)
     } catch (err: any) {
         console.log(err)
+    }
+}
+
+export async function PUT(request: NextRequest) {
+    const { _id, data } = await request.json();
+    console.log(_id, data)
+    try {
+        const a = await taskModel.updateOne({ _id }, { $set: data });
+        return NextResponse.json(a)
+    } catch (error: any) {
+        console.log(error);
+        return NextResponse.json({ error: error.message }, { status: 500 })
     }
 }
