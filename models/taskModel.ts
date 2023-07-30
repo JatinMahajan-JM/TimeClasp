@@ -12,7 +12,7 @@ const taskSchema = new mongoose.Schema({
         }
     ],
     taskType: {
-        type: Boolean,
+        type: Number,
     },
     priority: {
         type: String
@@ -28,6 +28,13 @@ const taskSchema = new mongoose.Schema({
     },
     endTime: {
         type: String
+    },
+    timeWorked: {
+        type: Number,
+        default: 0
+    },
+    allocatedTime: {
+        type: Number,
     }
 })
 

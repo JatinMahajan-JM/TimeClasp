@@ -201,6 +201,7 @@ export default function StopWatch({ data }: TimerProps) {
           ) : (
             ""
           )}
+          {taskType === true ? <input type="time" min={1} max={12} /> : ""}
           <button type="submit">ADD</button>
         </form>
       </section>
