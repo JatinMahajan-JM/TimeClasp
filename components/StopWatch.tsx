@@ -167,9 +167,30 @@ export default function StopWatch({ data }: TimerProps) {
     setSubTasks((prev) => [...prev, newSubtaskObj]);
   };
 
-  const handleTaskClick = (id: string) => {
+  const handleTaskClick = async (id: string) => {
     if (selectedTask?._id === id) return;
-
+    if (isActive) {
+      setIsActive(false);
+      let updateData = {
+        timeWorked: seconds,
+        timerStartTime: Date.now(),
+        timerEnded: true,
+      };
+      const res = await fetch("/api/task", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          _id: selectedTask?._id,
+          data: updateData,
+        }),
+      });
+      console.log(await res.json());
+      const updatedRes = await fetch("/api/task");
+      const updatedData = await updatedRes.json();
+      setDataState(updatedData);
+    }
     const selectedItem = dataState.find((task) => task._id === id);
     setSelectedTask(selectedItem);
     setSeconds(selectedItem?.timeWorked);
