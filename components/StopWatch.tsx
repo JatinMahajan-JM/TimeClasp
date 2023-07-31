@@ -190,13 +190,51 @@ export default function StopWatch({ data }: TimerProps) {
   const [subTaskToggle, setSubTaskToggle] = useState(false);
   const [subTasks, setSubTasks] = useState<Subtask[]>([]);
   // const [selectedTask, setSelectedTask] = useState<{ [key: string]: any }>();
+  console.log(taskType);
 
   const newTaskHandler = (event: React.FormEvent<HTMLFormElement>) => {
     // const newTaskHandler = (FormData: FormData) => {
     // console.log(FormData);
-
     event.preventDefault();
-    // console.log(subTasksRef.current?.value);
+    let timeAllocated = timeAllocatedRef.current?.value;
+    if (
+      taskType === false &&
+      startTimeRef.current?.value &&
+      endTimeRef.current?.value
+    ) {
+      const [hours1, minutes1] = startTimeRef.current.value
+        .split(":")
+        .map(Number);
+      const [hours2, minutes2] = endTimeRef.current.value
+        .split(":")
+        .map(Number);
+
+      // Create Date objects with the current date and provided hours and minutes
+      const date1 = new Date();
+      date1.setHours(hours1, minutes1, 0, 0);
+
+      const date2 = new Date();
+      date2.setHours(hours2, minutes2, 0, 0);
+
+      // Calculate the time difference in milliseconds
+      const timeDiffMilliseconds = Math.abs(date2.getTime() - date1.getTime());
+
+      // Convert the time difference back to "hh:mm" format
+      const hoursDiff = Math.floor(timeDiffMilliseconds / (60 * 60 * 1000));
+      const minutesDiff = Math.floor(
+        (timeDiffMilliseconds % (60 * 60 * 1000)) / (60 * 1000)
+      );
+
+      // Format the result to "hh:mm" format
+      const result = `${hoursDiff.toString().padStart(2, "0")}:${minutesDiff
+        .toString()
+        .padStart(2, "0")}`;
+
+      timeAllocated = result;
+      console.log(timeAllocated);
+    }
+
+    console.log(subTasksRef.current?.value);
     fetch("/api/task/addNewTask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -209,7 +247,7 @@ export default function StopWatch({ data }: TimerProps) {
         repeat: repeatRef.current?.value,
         startTime: startTimeRef.current?.value,
         endTime: endTimeRef.current?.value,
-        timeAllocated: timeAllocatedRef.current?.value,
+        timeAllocated,
       }),
     });
   };
