@@ -1,3 +1,9 @@
+import BarChart from "@/components/BarChart";
+
 export default function Statistics() {
-  return <h1>Statistics</h1>;
+  return (
+    <>
+      <BarChart />
+    </>
+  );
 }
