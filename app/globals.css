@@ -62,3 +62,10 @@ select {
   color: black;
   padding: 4px;
 }
+
+button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin: 2px;
+  background-color: rgb(250, 140, 140);
+}

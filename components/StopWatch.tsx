@@ -5,7 +5,8 @@ import AllTasksClient from "./AllTasksClient";
 import { CloseConfirmation } from "./CloseConfirmation";
 
 interface TimerProps {
-  data: [{ [key: string]: any }];
+  // data: [{ [key: string]: any }];
+  data: { [key: string]: any }[];
 }
 
 export default function StopWatch({ data }: TimerProps) {
@@ -46,7 +47,7 @@ export default function StopWatch({ data }: TimerProps) {
       const updatedData = await updatedRes.json();
       setDataState(updatedData);
 
-      console.log(res, updatedData, dataState);
+      console.log(await res.json(), updatedData, dataState);
     }
     setIsActive((prevIsActive) => !prevIsActive);
   };
@@ -54,15 +55,78 @@ export default function StopWatch({ data }: TimerProps) {
   useEffect(() => {
     if (selectedTask) {
       if (!selectedTask.timerEnded) {
-        // console.log((Date.now() - selectedTask.timerStartTime) / 1000);
-        setSeconds(
+        const timeCalculated =
           (Date.now() - selectedTask.timerStartTime) / 1000 +
-            selectedTask.timeWorked
-        );
+          selectedTask.timeWorked;
+        if (timeCalculated > selectedTask.timeAllocated) {
+          let updateData = {
+            timeWorked: seconds,
+            isCompleted: true,
+          };
+          const res = fetch("/api/task", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              _id: selectedTask?._id,
+              data: updateData,
+            }),
+          });
+        }
+
+        setSeconds(timeCalculated);
         setIsActive(true);
       }
     }
   }, [selectedTask]);
+
+  useEffect(() => {
+    let timeTillCompletion;
+    let timeout: NodeJS.Timeout;
+    if (selectedTask && isActive) {
+      let allocatedTime = selectedTask.timeAllocated;
+      const [hours, minutes] = allocatedTime.split(":").map(Number);
+      console.log(hours, minutes);
+      if (seconds !== 0) {
+        //end - seconds
+        const totalMilliseconds = hours * 60 * 60 * 1000 + minutes * 60 * 1000;
+        timeTillCompletion = totalMilliseconds - seconds * 1000;
+        console.log(timeTillCompletion);
+      }
+      timeout = setTimeout(async () => {
+        // let updateData = {
+        //   timeWorked: seconds,
+        //   timerStartTime: Date.now(),
+        //   timerEnded: true,
+        //   isCompleted: true,
+        // };
+        // const res = await fetch("/api/task", {
+        //   method: "PUT",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     _id: selectedTask?._id,
+        //     data: updateData,
+        //   }),
+        // });
+        setDataState((prev) => {
+          const modifiedIndex = prev.findIndex(
+            (item) => item._id === selectedTask?._id
+          );
+          const newDataState = [...dataState]; // Create a copy of the state array
+          newDataState[modifiedIndex] = {
+            ...newDataState[modifiedIndex],
+            isCompleted: true,
+          };
+          return newDataState;
+        });
+        console.log(dataState, "Modified");
+      }, timeTillCompletion);
+    }
+    return () => clearTimeout(timeout);
+  }, [isActive, selectedTask]);
 
   console.log(seconds, dataState);
   const handleReset = () => {
@@ -197,6 +261,38 @@ export default function StopWatch({ data }: TimerProps) {
   };
   console.log(selectedTask);
 
+  const handleDone = async () => {
+    setIsActive(false);
+    // let updateData = {
+    //   timeWorked: seconds,
+    //   timerStartTime: Date.now(),
+    //   timerEnded: true,
+    //   isCompleted: true,
+    // };
+    // const res = await fetch("/api/task", {
+    //   method: "PUT",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     _id: selectedTask?._id,
+    //     data: updateData,
+    //   }),
+    // });
+    setDataState((prev) => {
+      const modifiedIndex = prev.findIndex(
+        (item) => item._id === selectedTask?._id
+      );
+      const newDataState = [...dataState]; // Create a copy of the state array
+      newDataState[modifiedIndex] = {
+        ...newDataState[modifiedIndex],
+        isCompleted: true,
+      };
+      return newDataState;
+    });
+    console.log(dataState, "Modified");
+  };
+
   return (
     <>
       <div className="relative grid justify-center content-center h-64">
@@ -219,9 +315,11 @@ export default function StopWatch({ data }: TimerProps) {
           {formatTime(seconds)}
         </div>
       </div>
+      <button>Reset</button>
+      <button onClick={handleDone}>Done</button>
       {/* All Tasks */}
       <AllTasksClient data={dataState} handleClick={handleTaskClick} />
-      <CloseConfirmation />
+      {/* <CloseConfirmation /> */}
       {/* Form for adding new task */}
       <section>
         <form onSubmit={newTaskHandler} className="flex flex-col w-1/4 gap-2">
