@@ -70,7 +70,8 @@ button {
   background-color: rgb(250, 140, 140);
 }
 
-bar {
-  color: burlywood;
-  border-radius: 10px;
+.bar {
+  fill: aquamarine;
+  /* width: 10px; */
+  /* color: burlywood; */
 }

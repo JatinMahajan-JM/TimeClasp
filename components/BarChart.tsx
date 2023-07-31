@@ -26,7 +26,7 @@ const BarChart: React.FC = () => {
         .scaleBand()
         .domain(data.map((d) => d.taskName))
         .range([margin.left, width - margin.right])
-        .padding(0.1);
+        .padding(0.8);
 
       const y = d3
         .scaleLinear()
@@ -57,8 +57,11 @@ const BarChart: React.FC = () => {
         .attr("x", (d) => x(d.taskName) as number)
         .attr("y", (d) => y(d.hoursWorked))
         .attr("width", x.bandwidth())
+        // .attr("width", 10)
         .attr("height", (d) => y(0) - y(d.hoursWorked))
-        .attr("fill", "steelblue");
+        .attr("rx", 5)
+        .attr("ry", 2)
+        .attr("class", "bar");
     }
   }, [data]);
 
