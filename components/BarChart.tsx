@@ -49,19 +49,44 @@ const BarChart: React.FC = () => {
       svg.append("g").call(xAxis);
       svg.append("g").call(yAxis);
 
+      // Use a color scale to assign different colors to each bar
+      const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+      // svg
+      //   .append("g")
+      //   .selectAll("rect")
+      //   .data(data)
+      //   .join("rect")
+      //   .attr("x", (d) => x(d.taskName) as number)
+      //   .attr("y", (d) => y(d.hoursWorked))
+      //   .attr("width", x.bandwidth())
+      //   .attr("height", 0)
+      //   .transition()
+      //   .duration(1000)
+      //   .attr("height", (d) => y(0) - y(d.hoursWorked))
+      //   .attr("rx", 5)
+      //   .attr("ry", 2)
+      //   .attr("class", "bar")
+      //   .attr("fill", (d) => colorScale(d.taskName))
+
       svg
         .append("g")
         .selectAll("rect")
         .data(data)
         .join("rect")
         .attr("x", (d) => x(d.taskName) as number)
-        .attr("y", (d) => y(d.hoursWorked))
+        .attr("y", height - margin.bottom) // Set initial y to the bottom of the chart
         .attr("width", x.bandwidth())
-        // .attr("width", 10)
-        .attr("height", (d) => y(0) - y(d.hoursWorked))
+        .attr("height", 0) // Initial height set to 0 for animation
         .attr("rx", 5)
         .attr("ry", 2)
-        .attr("class", "bar");
+        .attr("class", "bar")
+        .attr("fill", (d) => colorScale(d.taskName)) // Set the fill color based on the taskName
+        .attr("class", "bar")
+        .transition() // Add transition for animation
+        .duration(1000) // Animation duration in milliseconds
+        .attr("y", (d) => y(d.hoursWorked)) // Set final y position based on the data
+        .attr("height", (d) => height - margin.bottom - y(d.hoursWorked));
     }
   }, [data]);
 

@@ -75,3 +75,17 @@ button {
   /* width: 10px; */
   /* color: burlywood; */
 }
+
+/* styles.css */
+.axis path,
+.axis line {
+  display: none;
+}
+
+.domain {
+  display: none;
+}
+
+.tick line {
+  display: none;
+}
