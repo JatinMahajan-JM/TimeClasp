@@ -7,7 +7,19 @@ interface AllTaskProps {
 }
 
 export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
-  console.log(data, "Child component");
+  // Filter pending tasks
+  const pendingTasks = data.filter((task) => !task.isCompleted);
+
+  // Filter completed tasks for today
+  const today = new Date().toDateString();
+  // const completedTasksToday = data.filter(
+  //   (task) => task.isCompleted && task.createdAt?.toDateString() === today
+  // );
+  const completedTasksToday = data.filter(
+    (task) =>
+      task.isCompleted && new Date(task.createdAt).toDateString() === today
+  );
+  console.log(pendingTasks, completedTasksToday, "Child component", today);
   return (
     <>
       <h1>Pending</h1>
@@ -30,5 +42,23 @@ export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
         </section>
       ))}
     </>
+    // <div>
+    //   <div>
+    //     <h2>Pending Tasks</h2>
+    //     <ul>
+    //       {pendingTasks.map((task) => (
+    //         <li key={task.id}>{task.taskName}</li>
+    //       ))}
+    //     </ul>
+    //   </div>
+    //   <div>
+    //     <h2>Completed Tasks Today</h2>
+    //     <ul>
+    //       {completedTasksToday.map((task) => (
+    //         <li key={task.id}>{task.taskName}</li>
+    //       ))}
+    //     </ul>
+    //   </div>
+    // </div>
   );
 }

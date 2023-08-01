@@ -190,7 +190,7 @@ export default function StopWatch({ data }: TimerProps) {
   const [subTaskToggle, setSubTaskToggle] = useState(false);
   const [subTasks, setSubTasks] = useState<Subtask[]>([]);
   // const [selectedTask, setSelectedTask] = useState<{ [key: string]: any }>();
-  console.log(taskType);
+  console.log(taskType, isActive);
 
   const newTaskHandler = (event: React.FormEvent<HTMLFormElement>) => {
     // const newTaskHandler = (FormData: FormData) => {
