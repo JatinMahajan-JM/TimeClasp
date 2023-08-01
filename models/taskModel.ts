@@ -40,13 +40,17 @@ const taskSchema = new mongoose.Schema({
         type: Number,
     },
     timerEnded: {
-        type: Boolean
+        type: Boolean,
+        default: true
     },
     isCompleted: {
         type: Boolean,
         default: false
-    }
-})
+    },
+},
+    {
+        timestamps: true
+    })
 
 const taskModel = mongoose.models.taskModel || mongoose.model("taskModel", taskSchema);
 export default taskModel;
