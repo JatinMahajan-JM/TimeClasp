@@ -89,3 +89,52 @@ button {
 .tick line {
   display: none;
 }
+
+/* Styles for the Calendar component */
+.react-calendar {
+  width: 800px !important;
+  max-width: 800px;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  font-family: Arial, sans-serif;
+  border-radius: 4px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  background-color: #fff;
+}
+
+.react-calendar__navigation {
+  background-color: #f0f0f0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.react-calendar__navigation button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  font-size: 18px;
+  color: #333;
+}
+
+.react-calendar__navigation button:disabled {
+  color: #ccc;
+  cursor: default;
+}
+
+.react-calendar__tile {
+  padding: 0.75rem;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.react-calendar__tile:hover {
+  background-color: #f0f0f0;
+}
+
+/* Add more styles as needed */
