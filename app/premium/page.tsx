@@ -9,11 +9,18 @@ export default function Premium() {
     // e.preventDefault();
     setLoading(true);
     // Create a Checkout Session.
-    const response = await fetchPostJSON("/api/checkout_sessions", {
+    let response = await fetchPostJSON("/api/checkout_sessions", {
       amount: 4,
+      id: "pm_1KazTTSDv14nZkVL8Hr4uWNu",
     });
 
-    if (response.statusCode === 500) {
+    // const response = await fetchPostJSON({
+    //   url: "/api/create-checkout-session",
+    //   data: { price: 4 },
+    // });
+
+    console.log(response);
+    if (response?.status === 500) {
       console.error(response.message);
       return;
     }
@@ -24,7 +31,7 @@ export default function Premium() {
       // Make the id field from the Checkout Session creation API response
       // available to this file, so you can provide it as parameter here
       // instead of the {{CHECKOUT_SESSION_ID}} placeholder.
-      sessionId: response.id,
+      sessionId: response?.id,
     });
     // If `redirectToCheckout` fails due to a browser or network
     // error, display the localized error message to your customer
@@ -42,6 +49,7 @@ export default function Premium() {
 export async function fetchPostJSON(url: string, data?: {}) {
   try {
     // Default options are marked with *
+    console.log(data, "data");
     const response = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
@@ -57,6 +65,31 @@ export async function fetchPostJSON(url: string, data?: {}) {
     });
     return await response.json(); // parses JSON response into native JavaScript objects
   } catch (err: any) {
-    throw new Error(err.message);
+    // throw new Error(err.message);
+    console.log(err.message);
   }
 }
+
+// export const fetchPostJSON = async ({
+//   url,
+//   data,
+// }: {
+//   url: string;
+//   data?: {};
+// }) => {
+//   console.log("posting,", url, data);
+
+//   try {
+//     const res = await fetch(url, {
+//       method: "POST",
+//       headers: new Headers({ "Content-Type": "application/json" }),
+//       credentials: "same-origin",
+//       body: JSON.stringify(data),
+//     });
+//     console.log(res);
+
+//     return res.json();
+//   } catch (err: any) {
+//     console.log(err);
+//   }
+// };

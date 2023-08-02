@@ -1,6 +1,7 @@
 import UserModel from "@/models/userModel";
-import { getSession } from "next-auth/react";
 import { stripe } from "@/utils/stripe"
+import { getServerSession } from "next-auth";
+import { NextRequest } from "next/server";
 
 interface User {
     id?: string | null | undefined;
@@ -9,11 +10,15 @@ interface User {
     image?: string | null | undefined;
 }
 
-export async function POST(req: Request) {
-    const session = await getSession();
+export async function POST(req: NextRequest) {
+    const session = await getServerSession();
     if (req.method === "POST") {
         // 1. Retrieve the information from request
-        const { price, metadata = {} } = await req.json();
+        // const { data: price, metadata = {} } = await req.json();
+        const body = await req.json();
+        console.log(body, "body")
+        const { amount, id, metadata = {} } = body;
+
 
         // 2. Get the current user from session
         try {
@@ -27,32 +32,35 @@ export async function POST(req: Request) {
 
             // 4. Create a checkout session in stripe
             let stripeSession;
-            if (price.type === 'recurring') {
-                stripeSession = await stripe.checkout.sessions.create({
-                    payment_method_types: ['card'],
-                    billing_address_collection: 'required',
-                    // customer,
-                    // add the customer here
-                    customer_update: {
-                        address: 'auto'
-                    },
-                    line_items: [
-                        {
-                            price: price.id,
-                            // quantity
-                        }
-                    ],
-                    mode: 'subscription',
-                    allow_promotion_codes: true,
-                    subscription_data: {
-                        trial_from_plan: true,
-                        metadata
-                    },
-                    success_url: `${getURL()}/account`,
-                    cancel_url: `${getURL()}/`
-                });
-            }
+            // console.log(price, "price", await req.json())
+            // if (price.type === 'recurring') {
+            stripeSession = await stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                billing_address_collection: 'required',
+                // customer,
+                // add the customer here
+                // customer_update: {
+                //     address: 'auto'
+                // },
+                line_items: [
+                    {
+                        // name: "subscription",
+                        price: id,
+                        quantity: amount,
+                    }
+                ],
+                mode: 'subscription',
+                allow_promotion_codes: true,
+                subscription_data: {
+                    trial_from_plan: true,
+                    metadata
+                },
+                success_url: `${getURL()}/account`,
+                cancel_url: `${getURL()}/`
+            });
+            // }
             if (session) {
+                console.log(stripeSession)
                 return new Response(JSON.stringify({ sessionId: stripeSession?.id }), {
                     status: 200
                 });
