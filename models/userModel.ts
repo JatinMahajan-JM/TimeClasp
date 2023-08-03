@@ -16,3 +16,17 @@ const UserSchema = new Schema({
 const UserModel = models.User || model("User", UserSchema);
 
 export default UserModel;
+
+
+// {
+//     "_id": ObjectId("user_id"),
+//     "name": "John Doe",
+//     "email": "john.doe@example.com",
+//     "password": "hashed_password",
+//     "subscription": {
+//       "status": "active",
+//       "expires_at": ISODate("2023-08-31T23:59:59Z"),
+//       "plan": "premium"
+//     },
+//     "other_fields": "..."
+//   }
