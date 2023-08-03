@@ -11,7 +11,7 @@ export default function Premium() {
     // Create a Checkout Session.
     let response = await fetchPostJSON("/api/checkout_sessions", {
       amount: 4,
-      id: "pm_1KazTTSDv14nZkVL8Hr4uWNu",
+      id: "price_1NaxiYSDv14nZkVL8DehAQ9D",
     });
 
     // const response = await fetchPostJSON({
@@ -27,16 +27,17 @@ export default function Premium() {
 
     // Redirect to Checkout.
     const stripe = await getStripe();
-    const { error } = await stripe!.redirectToCheckout({
-      // Make the id field from the Checkout Session creation API response
-      // available to this file, so you can provide it as parameter here
-      // instead of the {{CHECKOUT_SESSION_ID}} placeholder.
-      sessionId: response?.id,
-    });
+    stripe?.redirectToCheckout({ sessionId: response.sessionId });
+    // const { error } = await stripe!.redirectToCheckout({
+    //   // Make the id field from the Checkout Session creation API response
+    //   // available to this file, so you can provide it as parameter here
+    //   // instead of the {{CHECKOUT_SESSION_ID}} placeholder.
+    //   sessionId: response?.id,
+    // });
     // If `redirectToCheckout` fails due to a browser or network
     // error, display the localized error message to your customer
     // using `error.message`.
-    console.warn(error.message);
+    // console.warn(error.message);
     setLoading(false);
   };
   return (

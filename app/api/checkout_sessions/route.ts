@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
                     trial_from_plan: true,
                     metadata
                 },
-                success_url: `${getURL()}/account`,
+                success_url: `${getURL()}premium`,
                 cancel_url: `${getURL()}/`
             });
             // }
