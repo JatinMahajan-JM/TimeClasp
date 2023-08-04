@@ -1,5 +1,6 @@
 import AllTasksClient from "@/components/AllTasksClient";
 import Stopwatch from "@/components/StopWatch";
+import TasksMain from "@/components/TasksMain";
 
 async function getAllTasks() {
   const res = await fetch("http://localhost:3000/api/task", {
@@ -24,7 +25,8 @@ export default async function MyTasks() {
   return (
     <>
       <h1>My Tasks</h1>
-      <Stopwatch data={allTasks} />
+      {/* <Stopwatch data={allTasks} /> */}
+      <TasksMain data={allTasks} />
     </>
   );
 }

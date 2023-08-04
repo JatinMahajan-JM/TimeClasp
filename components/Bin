@@ -1,0 +1,17 @@
+// const reducerFn = (state, action) => {
+//     case(action.type === "")
+// };
+
+// const [stateMain, dispatchFn] = useReducer(reducerFn, {
+//   value: 0,
+//   seconds: 0,
+//   isActive: false,
+//   selectedTask: {},
+// });
+
+// const Ctx = createContext({
+//   value: 0,
+//   seconds: 0,
+//   isActive: false,
+//   selectedTask: {},
+// });
