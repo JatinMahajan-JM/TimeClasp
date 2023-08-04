@@ -1,7 +1,14 @@
 "use client";
 
+interface updateDataType {
+  timeWorked: number;
+  timerStartTime: Number;
+  timerEnded?: boolean;
+}
+
 import { useContext } from "react";
 import { Ctx } from "./TasksMain";
+import { updateTaskData } from "@/api/tasksApi";
 
 export default function Timer() {
   const { value, seconds, isActive, selectedTask, dispatch, data } =
@@ -20,34 +27,33 @@ export default function Timer() {
   };
 
   const handleStartStop = async () => {
-    alert("timer started");
     if (seconds !== 0 && selectedTask) {
-      interface updateDataType {
-        timeWorked: number;
-        timerStartTime: Number;
-        timerEnded?: boolean;
-      }
       let updateData: updateDataType = {
         timeWorked: seconds,
         timerStartTime: Date.now(),
       };
       if (!isActive) updateData.timerEnded = false;
       else updateData.timerEnded = true;
-      const res = await fetch("/api/task", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          _id: selectedTask?._id,
-          data: updateData,
-        }),
+      // const res = await fetch("/api/task", {
+      //   method: "PUT",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     _id: selectedTask?._id,
+      //     data: updateData,
+      //   }),
+      // });
+      updateTaskData({
+        _id: selectedTask?._id,
+        data: updateData,
       });
 
       const updatedRes = await fetch("/api/task");
       const updatedData = await updatedRes.json();
       // setDataState(updatedData);
-      dispatch({ type: "dataState", payload: { data: updateData } });
+      // change here -> Don't retreive the data just update in the state.
+      dispatch({ type: "dataState", payload: { data: updatedData } });
     }
     // setIsActive((prevIsActive) => !prevIsActive);
     dispatch({ type: "isActive", payload: { active: !isActive } });
@@ -55,33 +61,22 @@ export default function Timer() {
 
   const handleDone = async () => {
     dispatch({ type: "isActive", payload: { active: false } });
-    // let updateData = {
-    //   timeWorked: seconds,
-    //   timerStartTime: Date.now(),
-    //   timerEnded: true,
-    //   isCompleted: true,
-    // };
-    // const res = await fetch("/api/task", {
-    //   method: "PUT",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     _id: selectedTask?._id,
-    //     data: updateData,
-    //   }),
-    // });
-    // setDataState((prev) => {
-    //   const modifiedIndex = prev.findIndex(
-    //     (item) => item._id === selectedTask?._id
-    //   );
-    //   const newDataState = [...dataState]; // Create a copy of the state array
-    //   newDataState[modifiedIndex] = {
-    //     ...newDataState[modifiedIndex],
-    //     isCompleted: true,
-    //   };
-    //   return newDataState;
-    // });
+    let updateData = {
+      timeWorked: seconds,
+      timerStartTime: Date.now(),
+      timerEnded: true,
+      isCompleted: true,
+    };
+    const res = await fetch("/api/task", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        _id: selectedTask?._id,
+        data: updateData,
+      }),
+    });
     const dataModification = () => {
       const modifiedIndex = data.findIndex(
         (item) => item._id === selectedTask?._id
