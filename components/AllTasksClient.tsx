@@ -19,7 +19,7 @@ export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
     (task) =>
       task.isCompleted && new Date(task.createdAt).toDateString() === today
   );
-  console.log(pendingTasks, completedTasksToday, "Child component", today);
+  // console.log(pendingTasks, completedTasksToday, "Child component", today);
   return (
     <>
       <h1>Pending</h1>
