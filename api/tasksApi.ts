@@ -10,11 +10,12 @@ export const updateTaskData = errorHandler(async (updatedData: any) => {
 });
 
 export const addNewTask = errorHandler(async (formData: any) => {
-    fetch("/api/task/addNewTask", {
+    const res = await fetch("/api/task/addNewTask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
     });
+    return await res.json();
 })
 
 function errorHandler(func: Function) {
