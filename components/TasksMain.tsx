@@ -1,9 +1,17 @@
 "use client";
-import { Dispatch, useEffect, useReducer } from "react";
+
+import {
+  Dispatch,
+  MutableRefObject,
+  useEffect,
+  useReducer,
+  useRef,
+} from "react";
 import Timer from "./Timer";
 import { createContext } from "react";
 import NewTaskForm from "./NewTaskForm";
 import { updateTaskData } from "@/api/tasksApi";
+import AllTasks from "./AllTasks";
 
 interface ActionType {
   type: string;
@@ -29,7 +37,8 @@ const reducerFn = (state: StateType, action: ActionType) => {
     case "value":
       return { ...state, value: action.payload.value };
     case "seconds":
-      return { ...state, value: action.payload.seconds };
+      console.log("Inside reducer function", action.payload.seconds);
+      return { ...state, seconds: action.payload.seconds };
     case "isActive":
       return { ...state, isActive: action.payload.active };
     case "selectedTask":
@@ -55,12 +64,24 @@ export default function TasksMain({ data }: TimerProps) {
     value: 0,
     seconds: 0,
     isActive: false,
-    selectedTask: {},
+    selectedTask: null,
     dispatch: () => {},
     data,
   });
 
+  let ctxValue = {
+    ...stateMain,
+    dispatch: dispatchFn,
+  };
+
   const { selectedTask, seconds, isActive } = stateMain;
+  let secondsRef: MutableRefObject<any> = useRef(selectedTask?.timeWorked);
+  // secondsRef.current = selectedTask?.timeWorked;
+  // if (selectedTask?.timeWorked !== null)
+  // else secondsRef.current = 0;
+  console.log(seconds, "outside");
+  // console.log(selectedTask, "taskmain", seconds);
+  console.log(selectedTask);
 
   const dataModification = (updateData: { [key: string]: any }) => {
     const modifiedIndex = data.findIndex(
@@ -105,7 +126,8 @@ export default function TasksMain({ data }: TimerProps) {
         // setIsActive(true);
         dispatchFn({ type: "seconds", payload: { seconds: timeCalculated } });
         dispatchFn({ type: "isActive", payload: { active: true } });
-      }
+        secondsRef.current = timeCalculated;
+      } else secondsRef.current = selectedTask.timeWorked;
     }
   }, [selectedTask]);
 
@@ -114,7 +136,8 @@ export default function TasksMain({ data }: TimerProps) {
     let timeout: NodeJS.Timeout;
 
     if (selectedTask && isActive) {
-      let allocatedTime = selectedTask.timeAllocated;
+      // console.log(selectedTask);
+      let allocatedTime = selectedTask?.timeAllocated;
       const [hours, minutes] = allocatedTime.split(":").map(Number);
       console.log(hours, minutes);
       if (seconds !== 0) {
@@ -169,8 +192,15 @@ export default function TasksMain({ data }: TimerProps) {
 
     if (isActive) {
       interval = setInterval(() => {
-        dispatchFn({ type: "seconds", payload: { seconds: seconds + 1 } });
+        console.log("interval", seconds);
+        let secondsHold = secondsRef.current + 1;
+        // dispatchFn({ type: "seconds", payload: { seconds: secondsHold } });
         // setSeconds((prevSeconds) => prevSeconds + 1);
+        dispatchFn({
+          type: "seconds",
+          payload: { seconds: secondsHold },
+        });
+        secondsRef.current = secondsHold;
       }, 1000);
     }
 
@@ -181,9 +211,10 @@ export default function TasksMain({ data }: TimerProps) {
 
   return (
     <>
-      <Ctx.Provider value={stateMain}>
+      <Ctx.Provider value={ctxValue}>
         <Timer />
         <NewTaskForm />
+        <AllTasks />
       </Ctx.Provider>
     </>
   );
