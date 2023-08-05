@@ -3,9 +3,12 @@
 import {
   Dispatch,
   MutableRefObject,
+  SetStateAction,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
+  useState,
 } from "react";
 import Timer from "./Timer";
 import { createContext } from "react";
@@ -24,18 +27,19 @@ interface TimerProps {
 
 export type StateType = {
   value: number;
-  seconds: number;
+  // seconds: number;
   isActive: boolean;
   selectedTask: any;
   dispatch: Dispatch<ActionType>;
   data: { [key: string]: any }[];
-  stateRef: number;
+  // stateRef: number;
+  setSeconds: Dispatch<SetStateAction<number>>;
   //   selectedTask: { [key: string]: any };
 };
 
 export type StateTypeReducer = {
   value: number;
-  seconds: number;
+  // seconds: number;
   isActive: boolean;
   selectedTask: any;
   dispatch: Dispatch<ActionType>;
@@ -67,18 +71,20 @@ const reducerFn = (state: StateTypeReducer, action: ActionType) => {
 
 export const Ctx = createContext<StateType>({
   value: 0,
-  seconds: 0,
+  // seconds: 0,
   isActive: false,
   selectedTask: {},
   dispatch: () => {},
   data: [],
-  stateRef: 0,
+  // stateRef: 0,
+  setSeconds: () => {},
 });
 
 export default function TasksMain({ data }: TimerProps) {
+  const [seconds, setSeconds] = useState(0);
   const [stateMain, dispatchFn] = useReducer(reducerFn, {
     value: 0,
-    seconds: 0,
+    // seconds: 0,
     isActive: false,
     selectedTask: null,
     dispatch: () => {},
@@ -87,8 +93,9 @@ export default function TasksMain({ data }: TimerProps) {
   });
 
   dispatchDup = dispatchFn;
+  console.log(seconds);
 
-  const { selectedTask, seconds, isActive, sendAndSet } = stateMain;
+  const { selectedTask, isActive, sendAndSet } = stateMain;
   let secondsRef: MutableRefObject<any> = useRef(selectedTask?.timeWorked);
   // let ctxValue = {
   //   ...stateMain,
@@ -141,18 +148,30 @@ export default function TasksMain({ data }: TimerProps) {
             data: updateData,
           });
         }
-        dispatchFn({ type: "seconds", payload: { seconds: timeCalculated } });
+        // dispatchFn({ type: "seconds", payload: { seconds: timeCalculated } });
+        setSeconds(timeCalculated);
         dispatchFn({ type: "isActive", payload: { active: true } });
         secondsRef.current = timeCalculated;
       } else secondsRef.current = selectedTask.timeWorked;
     }
   }, [selectedTask]);
 
-  let ctxValue = {
-    ...stateMain,
-    dispatch: dispatchFn,
-    stateRef: secondsRef.current,
-  };
+  // let ctxValue = {
+  //   ...stateMain,
+  //   dispatch: dispatchFn,
+  //   // seconds,
+  //   // stateRef: secondsRef.current,
+  //   setSeconds,
+  // };
+
+  const ctxValue = useMemo(
+    () => ({
+      ...stateMain,
+      dispatch: dispatchFn,
+      setSeconds,
+    }),
+    [stateMain, setSeconds]
+  );
 
   useEffect(() => {
     let timeTillCompletion;
@@ -188,10 +207,11 @@ export default function TasksMain({ data }: TimerProps) {
     if (isActive) {
       interval = setInterval(() => {
         let secondsHold = secondsRef.current + 1;
-        dispatchFn({
-          type: "seconds",
-          payload: { seconds: secondsHold },
-        });
+        // dispatchFn({
+        //   type: "seconds",
+        //   payload: { seconds: secondsHold },
+        // });
+        setSeconds((prev) => prev + 1);
         secondsRef.current = secondsHold;
       }, 1000);
     }
@@ -204,7 +224,7 @@ export default function TasksMain({ data }: TimerProps) {
   return (
     <>
       <Ctx.Provider value={ctxValue}>
-        <Timer />
+        <Timer seconds={seconds} />
         <NewTaskForm />
         <AllTasks />
       </Ctx.Provider>

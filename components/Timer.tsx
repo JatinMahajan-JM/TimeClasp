@@ -6,13 +6,16 @@ interface updateDataType {
   timerEnded?: boolean;
 }
 
+interface timerProps {
+  seconds: number;
+}
+
 import { useContext } from "react";
 import { Ctx } from "./TasksMain";
 import { updateTaskData } from "@/api/tasksApi";
 
-export default function Timer() {
-  const { value, seconds, isActive, selectedTask, dispatch, data } =
-    useContext(Ctx);
+export default function Timer({ seconds }: timerProps) {
+  const { value, isActive, selectedTask, dispatch, data } = useContext(Ctx);
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
