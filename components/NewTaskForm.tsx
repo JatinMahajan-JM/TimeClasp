@@ -1,14 +1,14 @@
 "use client";
 
 import { addNewTask } from "@/api/tasksApi";
-import { MouseEvent, useRef, useState } from "react";
+import React, { MouseEvent, useRef, useState } from "react";
 
 interface Subtask {
   id: number;
   task: string;
 }
 
-export default function NewTaskForm() {
+export function NewTaskForm() {
   const taskNameRef = useRef<HTMLInputElement>(null);
   const subTasksRef = useRef<HTMLInputElement>(null);
   const dueDateRef = useRef<HTMLInputElement>(null);
@@ -73,21 +73,6 @@ export default function NewTaskForm() {
       endTime: endTimeRef.current?.value,
       timeAllocated,
     });
-    // fetch("/api/task/addNewTask", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     taskName: taskNameRef.current?.value,
-    //     subTasks: subTasks,
-    //     taskType,
-    //     priority: priorityRef.current?.value,
-    //     dueDate: dueDateRef.current?.value,
-    //     repeat: repeatRef.current?.value,
-    //     startTime: startTimeRef.current?.value,
-    //     endTime: endTimeRef.current?.value,
-    //     timeAllocated,
-    //   }),
-    // });
   };
 
   const handleSubTask = () => {
@@ -107,6 +92,7 @@ export default function NewTaskForm() {
     }
   };
 
+  console.log("Form re-rendered");
   return (
     <>
       <section>
@@ -173,3 +159,5 @@ export default function NewTaskForm() {
     </>
   );
 }
+
+export default React.memo(NewTaskForm);

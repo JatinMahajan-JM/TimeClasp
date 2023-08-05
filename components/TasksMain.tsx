@@ -29,15 +29,28 @@ export type StateType = {
   selectedTask: any;
   dispatch: Dispatch<ActionType>;
   data: { [key: string]: any }[];
+  stateRef: number;
   //   selectedTask: { [key: string]: any };
 };
 
-const reducerFn = (state: StateType, action: ActionType) => {
+export type StateTypeReducer = {
+  value: number;
+  seconds: number;
+  isActive: boolean;
+  selectedTask: any;
+  dispatch: Dispatch<ActionType>;
+  data: { [key: string]: any }[];
+  sendAndSet: any;
+  //   selectedTask: { [key: string]: any };
+};
+
+let dispatchDup;
+
+const reducerFn = (state: StateTypeReducer, action: ActionType) => {
   switch (action.type) {
     case "value":
       return { ...state, value: action.payload.value };
     case "seconds":
-      console.log("Inside reducer function", action.payload.seconds);
       return { ...state, seconds: action.payload.seconds };
     case "isActive":
       return { ...state, isActive: action.payload.active };
@@ -45,6 +58,8 @@ const reducerFn = (state: StateType, action: ActionType) => {
       return { ...state, selectedTask: action.payload.selectedTask };
     case "dataState":
       return { ...state, data: action.payload.data };
+    case "sendAndSet":
+      return { ...state, sendAndSet: action.payload.data };
     default:
       return state;
   }
@@ -57,6 +72,7 @@ export const Ctx = createContext<StateType>({
   selectedTask: {},
   dispatch: () => {},
   data: [],
+  stateRef: 0,
 });
 
 export default function TasksMain({ data }: TimerProps) {
@@ -66,22 +82,19 @@ export default function TasksMain({ data }: TimerProps) {
     isActive: false,
     selectedTask: null,
     dispatch: () => {},
+    sendAndSet: null,
     data,
   });
 
-  let ctxValue = {
-    ...stateMain,
-    dispatch: dispatchFn,
-  };
+  dispatchDup = dispatchFn;
 
-  const { selectedTask, seconds, isActive } = stateMain;
+  const { selectedTask, seconds, isActive, sendAndSet } = stateMain;
   let secondsRef: MutableRefObject<any> = useRef(selectedTask?.timeWorked);
-  // secondsRef.current = selectedTask?.timeWorked;
-  // if (selectedTask?.timeWorked !== null)
-  // else secondsRef.current = 0;
-  console.log(seconds, "outside");
-  // console.log(selectedTask, "taskmain", seconds);
-  console.log(selectedTask);
+  // let ctxValue = {
+  //   ...stateMain,
+  //   dispatch: dispatchFn,
+  //   stateRef: secondsRef.current,
+  // };
 
   const dataModification = (updateData: { [key: string]: any }) => {
     const modifiedIndex = data.findIndex(
@@ -96,6 +109,22 @@ export default function TasksMain({ data }: TimerProps) {
   };
 
   useEffect(() => {
+    if (sendAndSet === "sendAndSet") {
+      let updateData = {
+        timeWorked: seconds,
+        timerStartTime: Date.now(),
+        timerEnded: true,
+      };
+      updateTaskData(updateData);
+      dispatchFn({
+        type: "dataState",
+        payload: { data: dataModification(updateData) },
+      });
+      dispatchFn({ type: "sendAndSet", payload: { data: "sendAndSet" } });
+    }
+  }, [sendAndSet]);
+
+  useEffect(() => {
     if (selectedTask) {
       if (!selectedTask.timerEnded) {
         const timeCalculated =
@@ -107,23 +136,11 @@ export default function TasksMain({ data }: TimerProps) {
             timeWorked: seconds,
             isCompleted: true,
           };
-          // const res = fetch("/api/task", {
-          //   method: "PUT",
-          //   headers: {
-          //     "Content-Type": "application/json",
-          //   },
-          //   body: JSON.stringify({
-          //     _id: selectedTask?._id,
-          //     data: updateData,
-          //   }),
-          // });
           updateTaskData({
             _id: selectedTask?._id,
             data: updateData,
           });
         }
-        // setSeconds(timeCalculated);
-        // setIsActive(true);
         dispatchFn({ type: "seconds", payload: { seconds: timeCalculated } });
         dispatchFn({ type: "isActive", payload: { active: true } });
         secondsRef.current = timeCalculated;
@@ -131,20 +148,22 @@ export default function TasksMain({ data }: TimerProps) {
     }
   }, [selectedTask]);
 
+  let ctxValue = {
+    ...stateMain,
+    dispatch: dispatchFn,
+    stateRef: secondsRef.current,
+  };
+
   useEffect(() => {
     let timeTillCompletion;
     let timeout: NodeJS.Timeout;
 
     if (selectedTask && isActive) {
-      // console.log(selectedTask);
       let allocatedTime = selectedTask?.timeAllocated;
       const [hours, minutes] = allocatedTime.split(":").map(Number);
-      console.log(hours, minutes);
       if (seconds !== 0) {
-        //end - seconds
         const totalMilliseconds = hours * 60 * 60 * 1000 + minutes * 60 * 1000;
         timeTillCompletion = totalMilliseconds - seconds * 1000;
-        console.log(timeTillCompletion);
       }
       timeout = setTimeout(async () => {
         let updateData = {
@@ -153,35 +172,11 @@ export default function TasksMain({ data }: TimerProps) {
           timerEnded: true,
           isCompleted: true,
         };
-        // const res = await fetch("/api/task", {
-        //   method: "PUT",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify({
-        //     _id: selectedTask?._id,
-        //     data: updateData,
-        //   }),
-        // });
         updateTaskData(updateData);
-        // setDataState((prev) => {
-        //   const modifiedIndex = prev.findIndex(
-        //     (item) => item._id === selectedTask?._id
-        //   );
-        //   const newDataState = [...dataState]; // Create a copy of the state array
-        //   newDataState[modifiedIndex] = {
-        //     ...newDataState[modifiedIndex],
-        //     isCompleted: true,
-        //   };
-        //   return newDataState;
-        // });
-
         dispatchFn({
           type: "dataState",
           payload: { data: dataModification(updateData) },
         });
-
-        // console.log(dataState, "Modified");
       }, timeTillCompletion);
     }
     return () => clearTimeout(timeout);
@@ -192,10 +187,7 @@ export default function TasksMain({ data }: TimerProps) {
 
     if (isActive) {
       interval = setInterval(() => {
-        console.log("interval", seconds);
         let secondsHold = secondsRef.current + 1;
-        // dispatchFn({ type: "seconds", payload: { seconds: secondsHold } });
-        // setSeconds((prevSeconds) => prevSeconds + 1);
         dispatchFn({
           type: "seconds",
           payload: { seconds: secondsHold },
