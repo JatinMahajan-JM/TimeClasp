@@ -26,6 +26,18 @@ export default function Timer() {
     return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   };
 
+  const dataModification = (updateData: { [key: string]: any }) => {
+    const modifiedIndex = data.findIndex(
+      (item) => item._id === selectedTask?._id
+    );
+    const newDataState = [...data]; // Create a copy of the state array
+    newDataState[modifiedIndex] = {
+      ...newDataState[modifiedIndex],
+      ...updateData,
+    };
+    return newDataState;
+  };
+
   const handleStartStop = async () => {
     if (seconds !== 0 && selectedTask) {
       let updateData: updateDataType = {
@@ -44,16 +56,17 @@ export default function Timer() {
       //     data: updateData,
       //   }),
       // });
-      updateTaskData({
-        _id: selectedTask?._id,
-        data: updateData,
-      });
+      updateTaskData({ _id: selectedTask?._id, data: updateData });
 
-      const updatedRes = await fetch("/api/task");
-      const updatedData = await updatedRes.json();
+      // const updatedRes = await fetch("/api/task");
+      // const updatedData = await updatedRes.json();
       // setDataState(updatedData);
       // change here -> Don't retreive the data just update in the state.
-      dispatch({ type: "dataState", payload: { data: updatedData } });
+      // dispatch({ type: "dataState", payload: { data: updatedData } });
+      dispatch({
+        type: "dataState",
+        payload: { data: dataModification(updateData) },
+      });
     }
     // setIsActive((prevIsActive) => !prevIsActive);
     dispatch({ type: "isActive", payload: { active: !isActive } });
@@ -67,28 +80,32 @@ export default function Timer() {
       timerEnded: true,
       isCompleted: true,
     };
-    const res = await fetch("/api/task", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        _id: selectedTask?._id,
-        data: updateData,
-      }),
+    // const res = await fetch("/api/task", {
+    //   method: "PUT",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     _id: selectedTask?._id,
+    //     data: updateData,
+    //   }),
+    // });
+    updateTaskData({ _id: selectedTask?._id, data: updateData });
+    // const dataModification = () => {
+    //   const modifiedIndex = data.findIndex(
+    //     (item) => item._id === selectedTask?._id
+    //   );
+    //   const newDataState = [...data]; // Create a copy of the state array
+    //   newDataState[modifiedIndex] = {
+    //     ...newDataState[modifiedIndex],
+    //     isCompleted: true,
+    //   };
+    //   return newDataState;
+    // };
+    dispatch({
+      type: "dataState",
+      payload: { data: dataModification(updateData) },
     });
-    const dataModification = () => {
-      const modifiedIndex = data.findIndex(
-        (item) => item._id === selectedTask?._id
-      );
-      const newDataState = [...data]; // Create a copy of the state array
-      newDataState[modifiedIndex] = {
-        ...newDataState[modifiedIndex],
-        isCompleted: true,
-      };
-      return newDataState;
-    };
-    dispatch({ type: "dataState", payload: { data: dataModification() } });
   };
   return (
     <>
