@@ -16,6 +16,7 @@ export default function SidePortal({ sections }: SidePortalProps) {
       <h4 className="text-secondary text-sm">{section.header}</h4>
       {section.items.map((child) => (
         <Link
+          key={child.id}
           href={`${child?.href}`}
           className={`flex items-center gap-3 p-2 ${
             path === child?.href

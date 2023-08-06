@@ -175,7 +175,7 @@ export default function TasksMain({ data }: TimerProps) {
   );
 
   return (
-    <div className="flex gap-20">
+    <div className="flex gap-20 justify-between">
       <Ctx.Provider value={ctxValue}>
         <div>
           <Timer seconds={seconds} />

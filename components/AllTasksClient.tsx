@@ -1,6 +1,15 @@
 "use client";
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
 const dummyData = [
   {
+    _id: 132,
     taskName: "Finish report",
     subTasks: [
       { id: 1, task: "Gather data" },
@@ -23,6 +32,7 @@ const dummyData = [
     updatedAt: new Date(),
   },
   {
+    _id: 4232,
     taskName: "Exercise",
     subTasks: [
       { id: 1, task: "Cardio" },
@@ -44,6 +54,7 @@ const dummyData = [
     updatedAt: new Date(),
   },
   {
+    _id: 23442,
     taskName: "Grocery shopping",
     subTasks: [],
     category: "Personal",
@@ -62,6 +73,7 @@ const dummyData = [
     updatedAt: new Date(),
   },
   {
+    _id: 343453,
     taskName: "Study for exam",
     subTasks: [
       { id: 1, task: "Review notes" },
@@ -88,6 +100,11 @@ interface AllTaskProps {
   // data: [{ [key: string]: any }];
   data: { [key: string]: any }[];
   handleClick: (id: string) => void;
+}
+
+interface SubTask {
+  id: number;
+  task: string;
 }
 
 function returnColor(category: string) {
@@ -143,24 +160,28 @@ export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
     <div>
       <div>
         <h2>Pending Tasks</h2>
-        <ul>
+        <ul className="grid grid-cols-3 gap-2 rounded-lg">
           {pendingTasks.map((task) => (
             <li
               key={task._id}
               onClick={() => handleClick(task._id)}
-              className="bg-varPrimary p-4"
+              className="bg-varPrimary p-4 rounded-lg flex gap-4 flex-col h-min"
             >
               <div className="flex w-full justify-between">
                 {/* <h2>{task.taskName}</h2> */}
-                <h2 className={`${returnColor(task.category)}`}>
-                  {task.category}
-                </h2>
+                <h4
+                  className={`${returnColor(
+                    task.category
+                  )} p-1 text-black text-xs rounded-md px-4`}
+                >
+                  {task.category.toUpperCase()}
+                </h4>
                 <button>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    className="w-6 h-6"
+                    className="w-4 h-4"
                   >
                     <path
                       fillRule="evenodd"
@@ -169,6 +190,31 @@ export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
                     />
                   </svg>
                 </button>
+              </div>
+              <div className="flex gap-1 flex-col">
+                <h5>{task.taskName}</h5>
+                {task.subTasks.length > 0 && (
+                  <Accordion type="single" collapsible>
+                    <AccordionItem value="item-1">
+                      <AccordionTrigger className="text-sm text-secondary">
+                        subtasks
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        {task.subTasks.map((item: SubTask, index: number) => (
+                          <h5 className="text-secondary" key={item.id}>
+                            {index + 1}. {item?.task}
+                          </h5>
+                        ))}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                )}
+              </div>
+              <div className="flex gap-4">
+                <span>{task.taskType}</span>
+                <span>
+                  {task?.startTime}-{task?.endTime}
+                </span>
               </div>
             </li>
           ))}
