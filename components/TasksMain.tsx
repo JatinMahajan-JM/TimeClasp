@@ -1,54 +1,16 @@
 "use client";
 
-import {
-  Dispatch,
-  MutableRefObject,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import Timer from "./Timer";
 import { createContext } from "react";
 import NewTaskForm from "./NewTaskForm";
 import { updateTaskData } from "@/api/tasksApi";
 import AllTasks from "./AllTasks";
-
-interface ActionType {
-  type: string;
-  payload?: any;
-}
+import { ActionType, StateType, StateTypeReducer } from "@/types";
 
 interface TimerProps {
   data: { [key: string]: any }[];
 }
-
-export type StateType = {
-  value: number;
-  // seconds: number;
-  isActive: boolean;
-  selectedTask: any;
-  dispatch: Dispatch<ActionType>;
-  data: { [key: string]: any }[];
-  // stateRef: number;
-  setSeconds: Dispatch<SetStateAction<number>>;
-  //   selectedTask: { [key: string]: any };
-};
-
-export type StateTypeReducer = {
-  value: number;
-  // seconds: number;
-  isActive: boolean;
-  selectedTask: any;
-  dispatch: Dispatch<ActionType>;
-  data: { [key: string]: any }[];
-  sendAndSet: any;
-  //   selectedTask: { [key: string]: any };
-};
-
-let dispatchDup;
 
 const reducerFn = (state: StateTypeReducer, action: ActionType) => {
   switch (action.type) {
@@ -76,7 +38,6 @@ export const Ctx = createContext<StateType>({
   selectedTask: {},
   dispatch: () => {},
   data: [],
-  // stateRef: 0,
   setSeconds: () => {},
 });
 
@@ -92,16 +53,8 @@ export default function TasksMain({ data }: TimerProps) {
     data,
   });
 
-  dispatchDup = dispatchFn;
-  console.log(seconds);
-
   const { selectedTask, isActive, sendAndSet } = stateMain;
-  let secondsRef: MutableRefObject<any> = useRef(selectedTask?.timeWorked);
-  // let ctxValue = {
-  //   ...stateMain,
-  //   dispatch: dispatchFn,
-  //   stateRef: secondsRef.current,
-  // };
+  // let secondsRef: MutableRefObject<any> = useRef(selectedTask?.timeWorked);
 
   const dataModification = (updateData: { [key: string]: any }) => {
     const modifiedIndex = data.findIndex(
@@ -115,6 +68,7 @@ export default function TasksMain({ data }: TimerProps) {
     return newDataState;
   };
 
+  // Get a request from the child to update the task data, if the user click on other task
   useEffect(() => {
     if (sendAndSet === "sendAndSet") {
       let updateData = {
@@ -131,6 +85,8 @@ export default function TasksMain({ data }: TimerProps) {
     }
   }, [sendAndSet]);
 
+  // Side effect to handle if the user has not turned off the timer.
+  // The time is set to the time, it should be on refresh.
   useEffect(() => {
     if (selectedTask) {
       if (!selectedTask.timerEnded) {
@@ -151,28 +107,14 @@ export default function TasksMain({ data }: TimerProps) {
         // dispatchFn({ type: "seconds", payload: { seconds: timeCalculated } });
         setSeconds(timeCalculated);
         dispatchFn({ type: "isActive", payload: { active: true } });
-        secondsRef.current = timeCalculated;
-      } else secondsRef.current = selectedTask.timeWorked;
+        // secondsRef.current = timeCalculated;
+      }
+      // else secondsRef.current = selectedTask.timeWorked;
     }
   }, [selectedTask]);
 
-  // let ctxValue = {
-  //   ...stateMain,
-  //   dispatch: dispatchFn,
-  //   // seconds,
-  //   // stateRef: secondsRef.current,
-  //   setSeconds,
-  // };
-
-  const ctxValue = useMemo(
-    () => ({
-      ...stateMain,
-      dispatch: dispatchFn,
-      setSeconds,
-    }),
-    [stateMain, setSeconds]
-  );
-
+  // useEffect to set the task to completed, when timeTillCompletion reaches zero.
+  // Runs when user start the timer or when the timer is not turned off and the browser is refreshed.
   useEffect(() => {
     let timeTillCompletion;
     let timeout: NodeJS.Timeout;
@@ -180,6 +122,8 @@ export default function TasksMain({ data }: TimerProps) {
     if (selectedTask && isActive) {
       let allocatedTime = selectedTask?.timeAllocated;
       const [hours, minutes] = allocatedTime.split(":").map(Number);
+      // The seconds are needed instead of timeWorked in case the timer has not been turned off.
+      // The seconds !== timeWorked
       if (seconds !== 0) {
         const totalMilliseconds = hours * 60 * 60 * 1000 + minutes * 60 * 1000;
         timeTillCompletion = totalMilliseconds - seconds * 1000;
@@ -206,13 +150,13 @@ export default function TasksMain({ data }: TimerProps) {
 
     if (isActive) {
       interval = setInterval(() => {
-        let secondsHold = secondsRef.current + 1;
+        // let secondsHold = secondsRef.current + 1;
         // dispatchFn({
         //   type: "seconds",
         //   payload: { seconds: secondsHold },
         // });
         setSeconds((prev) => prev + 1);
-        secondsRef.current = secondsHold;
+        // secondsRef.current = secondsHold;
       }, 1000);
     }
 
@@ -220,6 +164,15 @@ export default function TasksMain({ data }: TimerProps) {
       clearInterval(interval);
     };
   }, [isActive]);
+
+  const ctxValue = useMemo(
+    () => ({
+      ...stateMain,
+      dispatch: dispatchFn,
+      setSeconds,
+    }),
+    [stateMain, setSeconds]
+  );
 
   return (
     <>
