@@ -95,22 +95,42 @@ export function NewTaskForm() {
   // console.log("Form re-rendered");
   return (
     <>
-      <section>
-        <form onSubmit={newTaskHandler} className="flex flex-col w-1/4 gap-2">
-          <div className="flex">
-            <input type="text" placeholder="Task Name" ref={taskNameRef} />
-            <button
-              type="button"
-              onClick={() => setSubTaskToggle((prev) => !prev)}
-            >
-              +
-            </button>
-            {subTasks.map((item) => (
-              <input type="text" defaultValue={item.task} key={item.id} />
+      <section className="px-8 ">
+        <h1>Create New Task</h1>
+        <form
+          onSubmit={newTaskHandler}
+          className="flex flex-col w-full gap-2 rounde mt-4"
+        >
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <input type="text" placeholder="Task Name" ref={taskNameRef} />
+              <button
+                type="button"
+                onClick={() => setSubTaskToggle((prev) => !prev)}
+                className="add-border px-2 rounded-md border-spacing-1"
+              >
+                +
+              </button>
+            </div>
+            {subTasks.map((item, index) => (
+              <div className="flex gap-2 items-center">
+                <h6>{index + 1}.</h6>
+                <input
+                  type="text"
+                  defaultValue={item.task}
+                  key={item.id}
+                  className="border-b-2 border-solid border-varPrimary bg-inherit p-0 rounded-none"
+                />
+              </div>
             ))}
             {subTaskToggle ? (
               <>
-                <input type="text" ref={subTasksRef} />
+                <input
+                  type="text"
+                  ref={subTasksRef}
+                  placeholder="Subtask Title"
+                  className="border-b-2 border-solid border-varPrimary bg-inherit outline-none p-0 rounded-none"
+                />
                 <button type="button" onClick={handleSubTask}>
                   Add subtask
                 </button>

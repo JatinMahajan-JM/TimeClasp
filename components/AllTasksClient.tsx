@@ -159,7 +159,7 @@ export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
     // </>
     <div>
       <div>
-        <h2>Pending Tasks</h2>
+        <h4 className="text-secondary p-2">PENDING</h4>
         <ul className="grid grid-cols-3 gap-2 rounded-lg">
           {pendingTasks.map((task) => (
             <li
@@ -201,9 +201,16 @@ export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
                       </AccordionTrigger>
                       <AccordionContent>
                         {task.subTasks.map((item: SubTask, index: number) => (
-                          <h5 className="text-secondary" key={item.id}>
-                            {index + 1}. {item?.task}
-                          </h5>
+                          <div
+                            className="flex items-center gap-2"
+                            key={item.id}
+                          >
+                            <input type="checkbox" />
+                            <h5 className="text-secondary">
+                              {/* {index + 1}. */}
+                              {item?.task}
+                            </h5>
+                          </div>
                         ))}
                       </AccordionContent>
                     </AccordionItem>
@@ -220,16 +227,18 @@ export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
           ))}
         </ul>
       </div>
-      <div>
-        <h2>Completed Tasks Today</h2>
-        <ul>
-          {completedTasksToday.map((task) => (
-            <li key={task._id} onClick={() => handleClick(task._id)}>
-              {task.taskName}
-            </li>
-          ))}
-        </ul>
-      </div>
+      {completedTasksToday.length > 0 && (
+        <div>
+          <h4 className="text-secondary p-2 pt-8">COMPLETED</h4>
+          <ul>
+            {completedTasksToday.map((task) => (
+              <li key={task._id} onClick={() => handleClick(task._id)}>
+                {task.taskName}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

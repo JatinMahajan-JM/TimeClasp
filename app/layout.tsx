@@ -23,7 +23,12 @@ export default async function RootLayout({
   let main;
   if (session) {
     main = (
-      <body className={inter.className + " grid grid-cols-[300px_1fr]"}>
+      <body
+        className={
+          inter.className +
+          " grid lg:grid-cols-[300px_1fr] md:grid-cols-[240px_1fr]"
+        }
+      >
         <AuthProvider>
           <aside className="px-8 py-4 border-solid border-r border-secondary">
             <div className="w-full">
