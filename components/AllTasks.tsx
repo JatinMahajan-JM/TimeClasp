@@ -6,7 +6,7 @@ import { Ctx } from "./TasksMain";
 import { updateTaskData } from "@/api/tasksApi";
 
 function AllTasks() {
-  console.log("Re-rendered All Tasks");
+  // console.log("Re-rendered All Tasks");
   // const { data, selectedTask, isActive, seconds, dispatch } = useContext(Ctx);
   const { data, selectedTask, isActive, dispatch, setSeconds } =
     useContext(Ctx);

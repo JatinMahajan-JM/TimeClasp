@@ -114,6 +114,7 @@ export default function Timer({ seconds }: timerProps) {
     <>
       <div className="relative grid justify-center content-center h-64">
         <div
+          // #d5b7fc #62ecff
           className={`pie absolute shadow-[0_0px_18px_0px_#d5b7fc] ${
             isActive ? "animate-pulse" : ""
           }`}

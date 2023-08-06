@@ -175,12 +175,16 @@ export default function TasksMain({ data }: TimerProps) {
   );
 
   return (
-    <>
+    <div className="flex gap-20">
       <Ctx.Provider value={ctxValue}>
-        <Timer seconds={seconds} />
-        <NewTaskForm />
-        <AllTasks />
+        <div>
+          <Timer seconds={seconds} />
+          <AllTasks />
+        </div>
+        <div>
+          <NewTaskForm />
+        </div>
       </Ctx.Provider>
-    </>
+    </div>
   );
 }

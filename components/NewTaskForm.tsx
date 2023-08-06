@@ -58,10 +58,10 @@ export function NewTaskForm() {
         .padStart(2, "0")}`;
 
       timeAllocated = result;
-      console.log(timeAllocated);
+      // console.log(timeAllocated);
     }
 
-    console.log(subTasksRef.current?.value);
+    // console.log(subTasksRef.current?.value);
     addNewTask({
       taskName: taskNameRef.current?.value,
       subTasks: subTasks,
@@ -92,7 +92,7 @@ export function NewTaskForm() {
     }
   };
 
-  console.log("Form re-rendered");
+  // console.log("Form re-rendered");
   return (
     <>
       <section>
