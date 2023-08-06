@@ -25,11 +25,13 @@ export default async function RootLayout({
     main = (
       <body className={inter.className + " grid grid-cols-[300px_1fr]"}>
         <AuthProvider>
-          <aside>
-            <SignInButton />
-            <SidePortal sections={sidePortalConfig} />
+          <aside className="px-8 py-4 border-solid border-r border-secondary">
+            <div className="w-full">
+              <SignInButton />
+              <SidePortal sections={sidePortalConfig} />
+            </div>
           </aside>
-          <main>{children}</main>
+          <main className="px-8 py-8">{children}</main>
         </AuthProvider>
       </body>
     );

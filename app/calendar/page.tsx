@@ -58,11 +58,11 @@ export default function Calendar() {
   const getSelectedTask = (): React.ReactNode | undefined => {
     if (selectedDate) {
       const formattedDate = selectedDate.toISOString().split("T")[0];
-      console.log(
-        formattedDate,
-        tasks[0].createdAt.toISOString().split("T")[0],
-        formattedDate === tasks[0].createdAt.toISOString().split("T")[0]
-      );
+      // console.log(
+      //   formattedDate,
+      //   tasks[0].createdAt.toISOString().split("T")[0],
+      //   formattedDate === tasks[0].createdAt.toISOString().split("T")[0]
+      // );
       return tasks
         .filter(
           (task) => task.createdAt.toISOString().split("T")[0] == formattedDate

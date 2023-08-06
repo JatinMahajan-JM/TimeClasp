@@ -19,7 +19,7 @@ export default function Premium() {
     //   data: { price: 4 },
     // });
 
-    console.log(response);
+    // console.log(response);
     if (response?.status === 500) {
       console.error(response.message);
       return;
@@ -50,7 +50,7 @@ export default function Premium() {
 export async function fetchPostJSON(url: string, data?: {}) {
   try {
     // Default options are marked with *
-    console.log(data, "data");
+    // console.log(data, "data");
     const response = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
