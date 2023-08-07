@@ -61,8 +61,8 @@ body {
 }
 
 .pie {
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  height: 250px;
   border-radius: 50%;
 }
 
@@ -70,10 +70,24 @@ body {
 .pie2 {
   /* top: 3px;
   left: 3px; */
+  font-size: 26px;
+  width: 244px;
+  height: 244px;
+  border-radius: 50%;
+}
+
+/* .pie {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+}
+
+/* small */
+/* .pie2 {
   width: 194px;
   height: 194px;
   border-radius: 50%;
-}
+} */
 
 /* large */
 /* .pie2 {
@@ -84,10 +98,10 @@ body {
   border-radius: 50%;
 } */
 input[type="time"]::-webkit-calendar-picker-indicator {
-  visibility: hidden;
+  /* visibility: hidden; */
   color: white;
-  /* filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg)
-    brightness(95%) contrast(80%); */
+  filter: invert(48%) sepia(90%) saturate(3207%) hue-rotate(130deg)
+    brightness(95%) contrast(80%);
 }
 
 input {
