@@ -29,7 +29,10 @@ function AllTasks() {
     if (isActive) {
       // setIsActive(false);
       dispatch({ type: "isActive", payload: { active: false } });
-      dispatch({ type: "sendAndSet", payload: { data: "sendAndSet" } });
+      dispatch({
+        type: "sendAndSet",
+        payload: { data: "sendAndSet", lastTask: selectedTask },
+      });
       // let updateData = {
       //   // timeWorked: seconds,
       //   timeWorked: stateRef,
@@ -48,7 +51,7 @@ function AllTasks() {
     //   type: "seconds",
     //   payload: { seconds: selectedItem?.timeWorked },
     // });
-    setSeconds(selectedItem?.timeWorked);
+    // setSeconds(selectedItem?.timeWorked);
   };
   return <AllTasksClient data={data} handleClick={handleTaskClick} />;
 }
