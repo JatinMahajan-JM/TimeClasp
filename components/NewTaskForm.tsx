@@ -26,8 +26,12 @@ export function NewTaskForm() {
   const taskNameRef = useRef<HTMLInputElement>(null);
   const subTasksRef = useRef<HTMLInputElement>(null);
   const dueDateRef = useRef<HTMLInputElement>(null);
-  const priorityRef = useRef<HTMLInputElement>(null);
-  const repeatRef = useRef<HTMLInputElement>(null);
+  // const priorityRef = useRef<HTMLInputElement>(null);
+  // const repeatRef = useRef<HTMLInputElement>(null);
+  // const categoryRef = useRef<HTMLInputElement>(null);
+  const [priorityRef, setPriorityRef] = useState("");
+  const [repeatRef, setRepeat] = useState("");
+  const [categoryRef, setCategory] = useState("");
   const startTimeRef = useRef<HTMLInputElement>(null);
   const endTimeRef = useRef<HTMLInputElement>(null);
   const timeAllocatedRef = useRef<HTMLInputElement>(null);
@@ -81,9 +85,10 @@ export function NewTaskForm() {
       taskName: taskNameRef.current?.value,
       subTasks: subTasks,
       taskType,
-      priority: priorityRef.current?.value,
-      dueDate: dueDateRef.current?.value,
-      repeat: repeatRef.current?.value,
+      priority: priorityRef,
+      dueDate: date,
+      repeat: repeatRef,
+      category: categoryRef,
       startTime: startTimeRef.current?.value,
       endTime: endTimeRef.current?.value,
       timeAllocated,
@@ -108,7 +113,7 @@ export function NewTaskForm() {
   };
 
   // console.log("Form re-rendered");
-  console.log(repeatRef?.current?.value, date);
+  console.log(categoryRef);
   return (
     <>
       <section className="px-8 ">
@@ -181,28 +186,22 @@ export function NewTaskForm() {
           <div>
             <h5 className="font-bold">Priority and Repeat</h5>
             <div className="flex mt-2">
-              <Select>
+              <Select onValueChange={(value) => setPriorityRef(value)}>
                 <SelectTrigger className="w-[180px] add-border shadow-none">
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
-                <SelectContent
-                  className="bg-varPrimary border-none"
-                  ref={priorityRef}
-                >
+                <SelectContent className="bg-varPrimary border-none">
                   <SelectItem value="Urgent">Urgent</SelectItem>
                   <SelectItem value="High">High</SelectItem>
                   <SelectItem value="Medium">Medium</SelectItem>
                   <SelectItem value="Low">Low</SelectItem>
                 </SelectContent>
               </Select>
-              <Select>
+              <Select onValueChange={(value) => setRepeat(value)}>
                 <SelectTrigger className="w-[180px] ml-2 add-border shadow-none">
                   <SelectValue placeholder="Repeat" />
                 </SelectTrigger>
-                <SelectContent
-                  className="bg-varPrimary border-none"
-                  ref={repeatRef}
-                >
+                <SelectContent className="bg-varPrimary border-none">
                   <SelectItem value="r1">Hourly</SelectItem>
                   <SelectItem value="r2">Weeky</SelectItem>
                   <SelectItem value="r3">Monthly</SelectItem>
@@ -219,23 +218,39 @@ export function NewTaskForm() {
             onSelect={setDate}
             className="rounded-md border"
           /> */}
-          <Popover>
-            <PopoverTrigger className="flex gap-2 w-full justify-between p-2 add-border">
-              <h6 className="text-secondary">Due Date</h6>
-              <CalendarDays className="w-4 h-4" />
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 bg-primary" align="start">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                disabled={(date) =>
-                  date < new Date() || date < new Date("1900-01-01")
-                }
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+          <div>
+            <h5 className="font-bold mb-2">Category and Due Date</h5>
+            <div className="flex gap-2">
+              <Select onValueChange={(value) => setCategory(value)}>
+                <SelectTrigger className="w-[180px] add-border shadow-none">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent className="bg-varPrimary border-none">
+                  <SelectItem value="Work">Work</SelectItem>
+                  <SelectItem value="Personal">Personal</SelectItem>
+                  <SelectItem value="Education">Education</SelectItem>
+                  <SelectItem value="Health">Health</SelectItem>
+                </SelectContent>
+              </Select>
+              <Popover>
+                <PopoverTrigger className="flex gap-2 w-full justify-between p-2 add-border">
+                  <h6 className="text-secondary">Due Date</h6>
+                  <CalendarDays className="w-4 h-4" />
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-primary" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    disabled={(date) =>
+                      date < new Date() || date < new Date("1900-01-01")
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
 
           {taskType === false ? (
             <div>
@@ -256,7 +271,7 @@ export function NewTaskForm() {
           )}
           {taskType === true ? (
             <div>
-              <h5 className="font-bold mb-2">Start and End Time</h5>
+              <h5 className="font-bold mb-2">Allocate Time</h5>
               <input
                 type="time"
                 min="00:00"
@@ -268,7 +283,10 @@ export function NewTaskForm() {
           ) : (
             ""
           )}
-          <button type="submit" className="bg-c4 p-2 py-3 rounded-lg">
+          <button
+            type="submit"
+            className="bg-c4 p-2 py-2 rounded-lg text-base font-bold"
+          >
             Create Task
           </button>
         </form>
