@@ -17,6 +17,8 @@ module.exports = {
     },
     extend: {
       colors: {
+        secodaryBtn: "#2765fa",
+        primary: "#1d1f25",
         secondary: "#9193a6",
         lightBlue: "#6457ff",
         varPrimary: "#292e3c",
