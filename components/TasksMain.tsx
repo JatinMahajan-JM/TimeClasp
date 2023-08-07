@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Timer from "./Timer";
 import { createContext } from "react";
 import NewTaskForm from "./NewTaskForm";
@@ -10,6 +10,20 @@ import { ActionType, StateType, StateTypeReducer } from "@/types";
 
 interface TimerProps {
   data: { [key: string]: any }[];
+}
+
+function convertTimeStringToMilliseconds(timeString: string) {
+  const [hoursStr, minutesStr] = timeString.split(":").map((str) => str.trim());
+
+  const hours = parseInt(hoursStr, 10);
+  const minutes = parseInt(minutesStr, 10);
+
+  const hoursInseconds = hours * 60 * 60;
+  const minutesInseconds = minutes * 60;
+
+  const totalseconds = hoursInseconds + minutesInseconds;
+
+  return totalseconds;
 }
 
 let lastTask: any, lastSeconds: number;
@@ -106,6 +120,7 @@ export default function TasksMain({ data }: TimerProps) {
         const timeCalculated =
           (Date.now() - selectedTask.timerStartTime) / 1000 +
           selectedTask.timeWorked;
+        console.log(timeCalculated, "timeCalculated");
 
         if (timeCalculated > selectedTask.timeAllocated) {
           let updateData = {
@@ -120,14 +135,25 @@ export default function TasksMain({ data }: TimerProps) {
         // dispatchFn({ type: "seconds", payload: { seconds: timeCalculated } });
         setSeconds(timeCalculated);
         dispatchFn({ type: "isActive", payload: { active: true } });
+        let value =
+          (timeCalculated /
+            convertTimeStringToMilliseconds(selectedTask.timeAllocated)) *
+          100;
+        dispatchFn({ type: "value", payload: { value } });
         // secondsRef.current = timeCalculated;
       } else {
         // console.log(selectedTask, "In else");
         setSeconds(selectedTask?.timeWorked ?? 0);
+        let value =
+          (selectedTask.timeWorked /
+            convertTimeStringToMilliseconds(selectedTask.timeAllocated)) *
+          100;
+        dispatchFn({ type: "value", payload: { value } });
       }
       // else secondsRef.current = selectedTask.timeWorked;
     }
   }, [selectedTask]);
+  console.log(stateMain.value);
   // console.log(seconds);
 
   // useEffect to set the task to completed, when timeTillCompletion reaches zero.
@@ -138,36 +164,41 @@ export default function TasksMain({ data }: TimerProps) {
 
     if (selectedTask && isActive) {
       let allocatedTime = selectedTask?.timeAllocated;
-      const [hours, minutes] = allocatedTime.split(":").map(Number);
-      // The seconds are needed instead of timeWorked in case the timer has not been turned off.
-      // The seconds !== timeWorked
-      if (seconds !== 0) {
+      if (allocatedTime) {
+        const [hours, minutes] = allocatedTime.split(":").map(Number);
+        // The seconds are needed instead of timeWorked in case the timer has not been turned off.
+        // The seconds !== timeWorked
         const totalMilliseconds = hours * 60 * 60 * 1000 + minutes * 60 * 1000;
-        timeTillCompletion = totalMilliseconds - seconds * 1000;
-      }
-      timeout = setTimeout(async () => {
-        let updateData = {
-          timeWorked: seconds,
-          timerStartTime: Date.now(),
-          timerEnded: true,
-          isCompleted: true,
-        };
-        updateTaskData({
-          _id: selectedTask?._id,
-          data: updateData,
-        });
+        if (seconds !== 0) {
+          timeTillCompletion = totalMilliseconds - seconds * 1000;
+        } else timeTillCompletion = totalMilliseconds;
+        timeout = setTimeout(async () => {
+          let updateData = {
+            timeWorked: seconds,
+            timerStartTime: Date.now(),
+            timerEnded: true,
+            isCompleted: true,
+          };
+          updateTaskData({
+            _id: selectedTask?._id,
+            data: updateData,
+          });
 
-        dispatchFn({
-          type: "dataState",
-          payload: { data: dataModification(updateData) },
-        });
-      }, timeTillCompletion);
+          dispatchFn({
+            type: "dataState",
+            payload: { data: dataModification(updateData) },
+          });
+        }, timeTillCompletion);
+      }
+      return () => clearTimeout(timeout);
     }
-    return () => clearTimeout(timeout);
   }, [isActive, selectedTask]);
 
+  let secondsRef = useRef<number>();
+  secondsRef.current = seconds;
   useEffect(() => {
     let interval: NodeJS.Timeout;
+    let interval2: NodeJS.Timeout;
 
     if (isActive) {
       interval = setInterval(() => {
@@ -179,10 +210,20 @@ export default function TasksMain({ data }: TimerProps) {
         setSeconds((prev) => prev + 1);
         // secondsRef.current = secondsHold;
       }, 1000);
+
+      interval2 = setInterval(() => {
+        let secondsHold = secondsRef.current! + 1;
+        let value =
+          (secondsHold /
+            convertTimeStringToMilliseconds(selectedTask.timeAllocated)) *
+          100;
+        dispatchFn({ type: "value", payload: { value } });
+      }, 1000);
     }
 
     return () => {
       clearInterval(interval);
+      clearInterval(interval2);
     };
   }, [isActive]);
 
