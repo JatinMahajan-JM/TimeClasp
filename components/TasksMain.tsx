@@ -175,13 +175,13 @@ export default function TasksMain({ data }: TimerProps) {
   );
 
   return (
-    <div className="grid lg:grid-cols-[1fr_300px] gap-8">
+    <div className="grid lg:grid-cols-[1fr_350px] gap-8">
       <Ctx.Provider value={ctxValue}>
         <div>
           <Timer seconds={seconds} />
           <AllTasks />
         </div>
-        <div className="hidden lg:block border-secondary border-l border-solid">
+        <div className="hidden lg:block border-varPrimary border-l-2 border-solid">
           <NewTaskForm />
         </div>
       </Ctx.Provider>

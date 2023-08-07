@@ -2,6 +2,20 @@
 
 import { addNewTask } from "@/api/tasksApi";
 import React, { MouseEvent, useRef, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarDays } from "lucide-react";
 
 interface Subtask {
   id: number;
@@ -12,14 +26,15 @@ export function NewTaskForm() {
   const taskNameRef = useRef<HTMLInputElement>(null);
   const subTasksRef = useRef<HTMLInputElement>(null);
   const dueDateRef = useRef<HTMLInputElement>(null);
-  const priorityRef = useRef<HTMLSelectElement>(null);
-  const repeatRef = useRef<HTMLSelectElement>(null);
+  const priorityRef = useRef<HTMLInputElement>(null);
+  const repeatRef = useRef<HTMLInputElement>(null);
   const startTimeRef = useRef<HTMLInputElement>(null);
   const endTimeRef = useRef<HTMLInputElement>(null);
   const timeAllocatedRef = useRef<HTMLInputElement>(null);
   const [taskType, setTaskType] = useState(false);
   const [subTaskToggle, setSubTaskToggle] = useState(false);
   const [subTasks, setSubTasks] = useState<Subtask[]>([]);
+  const [date, setDate] = React.useState<Date | undefined>(new Date());
 
   const newTaskHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -93,13 +108,14 @@ export function NewTaskForm() {
   };
 
   // console.log("Form re-rendered");
+  console.log(repeatRef?.current?.value, date);
   return (
     <>
       <section className="px-8 ">
         <h1>Create New Task</h1>
         <form
           onSubmit={newTaskHandler}
-          className="flex flex-col w-full gap-2 rounde mt-4"
+          className="flex flex-col w-full gap-4 rounde mt-4"
         >
           <div className="flex flex-col gap-2">
             <div className="flex gap-2">
@@ -107,7 +123,7 @@ export function NewTaskForm() {
               <button
                 type="button"
                 onClick={() => setSubTaskToggle((prev) => !prev)}
-                className="add-border px-2 rounded-md border-spacing-1"
+                className="add-border px-2 rounded-md border-spacing-1 bg-varPrimary"
               >
                 +
               </button>
@@ -131,7 +147,11 @@ export function NewTaskForm() {
                   placeholder="Subtask Title"
                   className="border-b-2 border-solid border-varPrimary bg-inherit outline-none p-0 rounded-none"
                 />
-                <button type="button" onClick={handleSubTask}>
+                <button
+                  type="button"
+                  onClick={handleSubTask}
+                  className="add-border p-1 font-bold rounded-md hover:bg-varPrimary"
+                >
                   Add subtask
                 </button>
               </>
@@ -140,40 +160,117 @@ export function NewTaskForm() {
             )}
           </div>
           <div onClick={taskTypeHandler}>
-            <button type="button" className="flexible-hours">
+            <h5 className="font-bold">Task Type</h5>
+            <button
+              type="button"
+              className={`flexible-hours rounded-md p-1 px-2 mt-2 ${
+                taskType ? "bg-secodaryBtn" : "add-border text-secondary"
+              }`}
+            >
               Flexible Hours
             </button>
-            <button type="button" className="strict-hours">
+            <button
+              type="button"
+              className={`strict-hours rounded-md p-1 px-2 ml-2 ${
+                !taskType ? "bg-secodaryBtn" : "add-border text-secondary"
+              }`}
+            >
               Strict Hours
             </button>
           </div>
-          <select name="Priority" id="" ref={priorityRef}>
-            <option value="p1">1</option>
-            <option value="p1">1</option>
-            <option value="p1">1</option>
-            <option value="p1">1</option>
-          </select>
-          <input type="date" ref={dueDateRef} />
-          <select name="Repeat" id="" ref={repeatRef}>
-            <option value="p1">1</option>
-            <option value="p1">1</option>
-            <option value="p1">1</option>
-            <option value="p1">1</option>
-          </select>
+          <div>
+            <h5 className="font-bold">Priority and Repeat</h5>
+            <div className="flex mt-2">
+              <Select>
+                <SelectTrigger className="w-[180px] add-border shadow-none">
+                  <SelectValue placeholder="Priority" />
+                </SelectTrigger>
+                <SelectContent
+                  className="bg-varPrimary border-none"
+                  ref={priorityRef}
+                >
+                  <SelectItem value="Urgent">Urgent</SelectItem>
+                  <SelectItem value="High">High</SelectItem>
+                  <SelectItem value="Medium">Medium</SelectItem>
+                  <SelectItem value="Low">Low</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select>
+                <SelectTrigger className="w-[180px] ml-2 add-border shadow-none">
+                  <SelectValue placeholder="Repeat" />
+                </SelectTrigger>
+                <SelectContent
+                  className="bg-varPrimary border-none"
+                  ref={repeatRef}
+                >
+                  <SelectItem value="r1">Hourly</SelectItem>
+                  <SelectItem value="r2">Weeky</SelectItem>
+                  <SelectItem value="r3">Monthly</SelectItem>
+                  <SelectItem value="r4">Yearly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          {/* <input type="date" ref={dueDateRef} /> */}
+
+          {/* <Calendar
+            mode="single"
+            selected={date}
+            onSelect={setDate}
+            className="rounded-md border"
+          /> */}
+          <Popover>
+            <PopoverTrigger className="flex gap-2 w-full justify-between p-2 add-border">
+              <h6 className="text-secondary">Due Date</h6>
+              <CalendarDays className="w-4 h-4" />
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 bg-primary" align="start">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                disabled={(date) =>
+                  date < new Date() || date < new Date("1900-01-01")
+                }
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+
           {taskType === false ? (
-            <>
-              <input type="time" ref={startTimeRef} />
-              <input type="time" ref={endTimeRef} />
-            </>
+            <div>
+              <h5 className="font-bold mb-2">Start and End Time</h5>
+              <input
+                type="time"
+                ref={startTimeRef}
+                className="bg-transparent add-border p-1"
+              />
+              <input
+                type="time"
+                ref={endTimeRef}
+                className="bg-transparent add-border p-1 ml-2"
+              />
+            </div>
           ) : (
             ""
           )}
           {taskType === true ? (
-            <input type="time" min="00:00" max="12:00" ref={timeAllocatedRef} />
+            <div>
+              <h5 className="font-bold mb-2">Start and End Time</h5>
+              <input
+                type="time"
+                min="00:00"
+                max="12:00"
+                ref={timeAllocatedRef}
+                className="bg-transparent add-border p-1"
+              />
+            </div>
           ) : (
             ""
           )}
-          <button type="submit">ADD</button>
+          <button type="submit" className="bg-c4 p-2 py-3 rounded-lg">
+            Create Task
+          </button>
         </form>
       </section>
     </>

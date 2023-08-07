@@ -30,13 +30,13 @@ export default async function RootLayout({
         }
       >
         <AuthProvider>
-          <aside className="px-8 py-4 border-solid border-r border-secondary">
+          <aside className="px-8 py-4 border-solid border-r-2 border-varPrimary">
             <div className="w-full">
               <SignInButton />
               <SidePortal sections={sidePortalConfig} />
             </div>
           </aside>
-          <main className="px-8 py-8">{children}</main>
+          <main className="pl-8 py-8">{children}</main>
         </AuthProvider>
       </body>
     );
