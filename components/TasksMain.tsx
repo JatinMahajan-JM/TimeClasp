@@ -12,6 +12,7 @@ interface TimerProps {
   data: { [key: string]: any }[];
 }
 
+let lastTask: any, lastSeconds: number;
 const reducerFn = (state: StateTypeReducer, action: ActionType) => {
   switch (action.type) {
     case "value":
@@ -25,6 +26,8 @@ const reducerFn = (state: StateTypeReducer, action: ActionType) => {
     case "dataState":
       return { ...state, data: action.payload.data };
     case "sendAndSet":
+      lastTask = action.payload.lastTask;
+      // console.log(action.payload.lastTask);
       return { ...state, sendAndSet: action.payload.data };
     default:
       return state;
@@ -57,9 +60,14 @@ export default function TasksMain({ data }: TimerProps) {
   // let secondsRef: MutableRefObject<any> = useRef(selectedTask?.timeWorked);
 
   const dataModification = (updateData: { [key: string]: any }) => {
-    const modifiedIndex = data.findIndex(
-      (item) => item._id === selectedTask?._id
-    );
+    let modifiedIndex;
+    if (updateData.lastTask) {
+      modifiedIndex = data.findIndex((item) => item._id === lastTask?._id);
+    } else {
+      modifiedIndex = data.findIndex((item) => item._id === selectedTask?._id);
+    }
+    lastTask === null;
+    console.log(updateData.timeWorked, "data mod");
     const newDataState = [...data]; // Create a copy of the state array
     newDataState[modifiedIndex] = {
       ...newDataState[modifiedIndex],
@@ -71,17 +79,22 @@ export default function TasksMain({ data }: TimerProps) {
   // Get a request from the child to update the task data, if the user click on other task
   useEffect(() => {
     if (sendAndSet === "sendAndSet") {
+      // console.log(seconds, selectedTask, lastTask);
       let updateData = {
+        // timeWorked: lastSeconds,
         timeWorked: seconds,
         timerStartTime: Date.now(),
         timerEnded: true,
+        lastTask,
       };
-      updateTaskData(updateData);
+      console.log(updateData);
+      // updateTaskData(updateData);
+      updateTaskData({ _id: lastTask?._id, data: updateData });
       dispatchFn({
         type: "dataState",
         payload: { data: dataModification(updateData) },
       });
-      dispatchFn({ type: "sendAndSet", payload: { data: "sendAndSet" } });
+      dispatchFn({ type: "sendAndSet", payload: { data: "none" } });
     }
   }, [sendAndSet]);
 
@@ -108,10 +121,14 @@ export default function TasksMain({ data }: TimerProps) {
         setSeconds(timeCalculated);
         dispatchFn({ type: "isActive", payload: { active: true } });
         // secondsRef.current = timeCalculated;
+      } else {
+        // console.log(selectedTask, "In else");
+        setSeconds(selectedTask?.timeWorked ?? 0);
       }
       // else secondsRef.current = selectedTask.timeWorked;
     }
   }, [selectedTask]);
+  // console.log(seconds);
 
   // useEffect to set the task to completed, when timeTillCompletion reaches zero.
   // Runs when user start the timer or when the timer is not turned off and the browser is refreshed.
@@ -135,7 +152,11 @@ export default function TasksMain({ data }: TimerProps) {
           timerEnded: true,
           isCompleted: true,
         };
-        updateTaskData(updateData);
+        updateTaskData({
+          _id: selectedTask?._id,
+          data: updateData,
+        });
+
         dispatchFn({
           type: "dataState",
           payload: { data: dataModification(updateData) },

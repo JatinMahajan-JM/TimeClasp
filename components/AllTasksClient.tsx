@@ -115,13 +115,15 @@ function returnColor(category: string) {
       return "bg-c2";
     case "Health":
       return "bg-c3";
+    case "Education":
+      return "bg-c4";
     default:
       return "bg-c5";
   }
 }
 
 export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
-  data = dummyData;
+  // data = dummyData;
   // Filter pending tasks
   const pendingTasks = data.filter((task) => !task.isCompleted);
 
@@ -165,63 +167,68 @@ export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
             <li
               key={task._id}
               onClick={() => handleClick(task._id)}
-              className="bg-varPrimary p-4 rounded-lg flex gap-4 flex-col h-min"
+              className="bg-varPrimary px-4 pl-1 rounded-lg flex gap-4  h-min"
             >
-              <div className="flex w-full justify-between">
-                {/* <h2>{task.taskName}</h2> */}
-                <h4
-                  className={`${returnColor(
-                    task.category
-                  )} p-1 text-black text-xs rounded-md px-4`}
-                >
-                  {task.category.toUpperCase()}
-                </h4>
-                <button>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="w-4 h-4"
+              <div
+                className={`py-1 w-[3px] h-i ${returnColor(task.category)}`}
+              ></div>
+              <div className="flex gap-4 flex-col w-full py-4">
+                <div className="flex w-full justify-between">
+                  {/* <h2>{task.taskName}</h2> */}
+                  <h4
+                    className={`${returnColor(
+                      task.category
+                    )} p-1 text-black text-xs rounded-md px-4 bg-secondary`}
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M10.5 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <div className="flex gap-1 flex-col">
-                <h5>{task.taskName}</h5>
-                {task.subTasks.length > 0 && (
-                  <Accordion type="single" collapsible>
-                    <AccordionItem value="item-1">
-                      <AccordionTrigger className="text-sm text-secondary">
-                        subtasks
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        {task.subTasks.map((item: SubTask, index: number) => (
-                          <div
-                            className="flex items-center gap-2"
-                            key={item.id}
-                          >
-                            <input type="checkbox" />
-                            <h5 className="text-secondary">
-                              {/* {index + 1}. */}
-                              {item?.task}
-                            </h5>
-                          </div>
-                        ))}
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                )}
-              </div>
-              <div className="flex gap-4">
-                <span>{task.taskType}</span>
-                <span>
-                  {task?.startTime}-{task?.endTime}
-                </span>
+                    {task.category?.toUpperCase()}
+                  </h4>
+                  <button>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-4 h-4"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10.5 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div className="flex gap-1 flex-col">
+                  <h5>{task.taskName}</h5>
+                  {task.subTasks.length > 0 && (
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="item-1">
+                        <AccordionTrigger className="text-sm text-secondary">
+                          subtasks
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          {task.subTasks.map((item: SubTask, index: number) => (
+                            <div
+                              className="flex items-center gap-2"
+                              key={item.id}
+                            >
+                              <input type="checkbox" />
+                              <h5 className="text-secondary">
+                                {/* {index + 1}. */}
+                                {item?.task}
+                              </h5>
+                            </div>
+                          ))}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  )}
+                </div>
+                <div className="flex gap-4">
+                  <span>{task.taskType}</span>
+                  <span>
+                    {task?.startTime}-{task?.endTime}
+                  </span>
+                </div>
               </div>
             </li>
           ))}
