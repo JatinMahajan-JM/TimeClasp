@@ -162,7 +162,7 @@ export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
     <div>
       <div>
         <h4 className="text-secondary p-2">PENDING</h4>
-        <ul className="grid grid-cols-3 gap-2 rounded-lg">
+        <ul className="grid grid-cols-2 md:grid-cols-3 gap-2 rounded-lg">
           {pendingTasks.map((task) => (
             <li
               key={task._id}
