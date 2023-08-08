@@ -60,6 +60,7 @@ export const Ctx = createContext<StateType>({
 
 export default function TasksMain({ data }: TimerProps) {
   const [seconds, setSeconds] = useState(0);
+  const [modal, setModal] = useState(false);
   const [stateMain, dispatchFn] = useReducer(reducerFn, {
     value: 0,
     // seconds: 0,
@@ -144,10 +145,13 @@ export default function TasksMain({ data }: TimerProps) {
       } else {
         // console.log(selectedTask, "In else");
         setSeconds(selectedTask?.timeWorked ?? 0);
-        let value =
-          (selectedTask.timeWorked /
-            convertTimeStringToMilliseconds(selectedTask.timeAllocated)) *
-          100;
+        let value = 0;
+        if (selectedTask.timeWorked) {
+          value =
+            (selectedTask.timeWorked /
+              convertTimeStringToMilliseconds(selectedTask.timeAllocated)) *
+            100;
+        }
         dispatchFn({ type: "value", payload: { value } });
       }
       // else secondsRef.current = selectedTask.timeWorked;
@@ -236,6 +240,10 @@ export default function TasksMain({ data }: TimerProps) {
     [stateMain, setSeconds]
   );
 
+  const handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+    setModal((prev) => !prev);
+  };
+
   return (
     <div className="grid lg:grid-cols-[1fr_350px] gap-8">
       <Ctx.Provider value={ctxValue}>
@@ -243,9 +251,21 @@ export default function TasksMain({ data }: TimerProps) {
           <Timer seconds={seconds} />
           <AllTasks />
         </div>
-        <div className="hidden lg:block border-varPrimary border-l-2 border-solid">
+        {/* <div className="absolute lg:static top-0 right-0"> */}
+        <button
+          className="absolute top-10 right-5 w-20 bg-varPrimary p-2"
+          onClick={handleClick}
+        >
+          Create +
+        </button>
+        <div
+          className={`absolute bg-primary right-5 w-11/12 lg:w-full p-2 md:p-8 lg:p-0 md:w-2/3 lg:static lg:block border-varPrimary border-l-2 border-solid transition-all ${
+            modal ? "translate-x-0" : "translate-x-[-200%]"
+          } lg:translate-x-0`}
+        >
           <NewTaskForm />
         </div>
+        {/* </div> */}
       </Ctx.Provider>
     </div>
   );

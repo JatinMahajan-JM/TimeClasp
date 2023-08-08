@@ -151,7 +151,7 @@ export default function Timer({ seconds }: timerProps) {
   };
   return (
     <>
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-6">
         <div className="p-4 add-border">
           <div className="relative grid justify-center content-center h-64 ">
             <div
