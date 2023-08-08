@@ -6,6 +6,7 @@ import { sidePortalConfig } from "../config/portals";
 import AuthProvider from "@/components/AuthProvider";
 import { SignInButton } from "@/components/AuthButtons";
 import { getServerSession } from "next-auth/next";
+import MainNav from "@/components/MainNav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,25 +31,54 @@ export default async function RootLayout({
         }
       >
         <AuthProvider>
-          <aside className="px-8 py-4 border-solid border-r-2 border-varPrimary">
+          <aside className="px-8 py-4 border-solid border-r-2 border-varPrimary hidden md:block">
             <div className="w-full">
               <SignInButton />
               <SidePortal sections={sidePortalConfig} />
             </div>
           </aside>
-          <main className="pl-8 py-8">{children}</main>
+          <main className="p-3 md:pl-8 py-8">
+            <nav className="add-border p-2 mb-2 lg:hidden block">
+              <MainNav />
+            </nav>
+            {children}
+          </main>
         </AuthProvider>
       </body>
     );
-  } else
+  } else {
     main = (
-      <body>
+      <body
+        className={
+          inter.className +
+          " grid lg:grid-cols-[300px_1fr] md:grid-cols-[240px_1fr]"
+        }
+      >
         <AuthProvider>
-          <h1>Sign in to access</h1>
-          <SignInButton />
+          <aside className="px-8 py-4 border-solid border-r-2 border-varPrimary hidden md:block">
+            <div className="w-full">
+              <SignInButton />
+              <SidePortal sections={sidePortalConfig} />
+            </div>
+          </aside>
+          <main className="md:pl-8 py-8 p-3">
+            <nav className="add-border p-2 mb-2">
+              <MainNav />
+            </nav>
+            {children}
+          </main>
         </AuthProvider>
       </body>
     );
+    // main = (
+    //   <body>
+    //     <AuthProvider>
+    //       <h1>Sign in to access</h1>
+    //       <SignInButton />
+    //     </AuthProvider>
+    //   </body>
+    // );
+  }
   return (
     <html lang="en">
       {/* <body className={inter.className + " grid grid-cols-[300px_1fr]"}>
