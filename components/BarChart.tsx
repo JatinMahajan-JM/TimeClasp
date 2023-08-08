@@ -26,7 +26,7 @@ const BarChart: React.FC = () => {
         .scaleBand()
         .domain(data.map((d) => d.taskName))
         .range([margin.left, width - margin.right])
-        .padding(0.8);
+        .padding(0.8); // change the width of bar
 
       const y = d3
         .scaleLinear()
@@ -48,6 +48,7 @@ const BarChart: React.FC = () => {
 
       svg.append("g").call(xAxis);
       svg.append("g").call(yAxis);
+      // const textGroup = svg.append("g").attr("class", "text-group");
 
       // Use a color scale to assign different colors to each bar
       const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
@@ -68,6 +69,9 @@ const BarChart: React.FC = () => {
       //   .attr("ry", 2)
       //   .attr("class", "bar")
       //   .attr("fill", (d) => colorScale(d.taskName))
+      const g = svg
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
 
       svg
         .append("g")
@@ -82,11 +86,52 @@ const BarChart: React.FC = () => {
         .attr("ry", 2)
         .attr("class", "bar")
         .attr("fill", (d) => colorScale(d.taskName)) // Set the fill color based on the taskName
-        .attr("class", "bar")
+        // .attr("class", "bar")
+        .on("mouseenter", function (event, d) {
+          d3.select(this).transition().duration(10).attr("opacity", ".35");
+          // console.log(textGroup);
+          // const textLabel = textGroup.select(`#text-${d.taskName}`);
+          // textLabel.style("opacity", 1); // Make text label visible on hover
+          const xPos =
+            parseFloat(d3.select(this).attr("x")) + x.bandwidth() / 10;
+          const yPos = parseFloat(d3.select(this).attr("y")) - 30;
+
+          g.append("text")
+            .attr("class", "hover-text")
+            .attr("x", xPos)
+            .attr("y", yPos)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "12px")
+            .attr("fill", "white")
+            .text(d.hoursWorked);
+        })
+        .on("mouseleave", function () {
+          d3.select(this).transition().duration(10).attr("opacity", "1");
+          svg.selectAll(".hover-text").remove();
+        })
+        // .on("mouseout", function (event, d) {
+        //   console.log(d);
+        //   const textLabel = textGroup.select(`#text-${d.taskName}`);
+        //   textLabel.style("opacity", 0); // Make text label invisible on mouseout
+        // })
         .transition() // Add transition for animation
         .duration(1000) // Animation duration in milliseconds
         .attr("y", (d) => y(d.hoursWorked)) // Set final y position based on the data
         .attr("height", (d) => height - margin.bottom - y(d.hoursWorked));
+
+      // textGroup
+      //   .selectAll("text")
+      //   .data(data)
+      //   .enter()
+      //   .append("text")
+      //   .attr("id", (d) => `text-${d.taskName}`)
+      //   .attr("x", (d) => x(d.taskName)! + x.bandwidth() / 2)
+      //   .attr("y", (d) => y(d.hoursWorked) - 10) // Adjust the position above the bar
+      //   .attr("dy", "-0.5em")
+      //   .attr("text-anchor", "middle")
+      //   .text((d) => d.hoursWorked)
+      //   .attr("visibility", "hidden") // Initially hide the text labels
+      //   .attr("fill", "white");
     }
   }, [data]);
 
