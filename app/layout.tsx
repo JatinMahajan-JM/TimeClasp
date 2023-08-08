@@ -1,14 +1,16 @@
 import SidePortal from "@/components/SidePortal";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Josefin_Sans } from "next/font/google";
+// import { Roboto } from "next/font/google";
 import { sidePortalConfig } from "../config/portals";
 import AuthProvider from "@/components/AuthProvider";
 import { SignInButton } from "@/components/AuthButtons";
 import { getServerSession } from "next-auth/next";
 import MainNav from "@/components/MainNav";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Josefin_Sans({ subsets: ["latin"], weight: ["500", "700"] });
+// const inter = Roboto({ subsets: ["latin"], weight: "900" });
 
 export const metadata: Metadata = {
   title: "TimeClasp - Time and Task Tracker",
