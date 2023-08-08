@@ -116,7 +116,7 @@ export function NewTaskForm() {
   console.log(categoryRef);
   return (
     <>
-      <section className="px-8 ">
+      <section className="lg:px-8 md:w-11/12 lg:w-full md:m-auto">
         <h1>Create New Task</h1>
         <form
           onSubmit={newTaskHandler}
