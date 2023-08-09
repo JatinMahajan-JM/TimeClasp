@@ -1,4 +1,5 @@
 import BarChart from "@/components/BarChart";
+import SplineChart from "@/components/SplineChart";
 import TimeStats from "@/components/TimeStats";
 
 async function getUpdatedData() {
@@ -16,6 +17,7 @@ export default async function Statistics() {
         <div className="flex flex-col gap-10">
           <TimeStats data={data} />
           <BarChart dataDB={data} />
+          <SplineChart dataDB={data} />
         </div>
         <div></div>
       </div>
