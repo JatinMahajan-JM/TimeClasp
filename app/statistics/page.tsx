@@ -13,9 +13,9 @@ export default async function Statistics() {
   return (
     <>
       <div className="grid grid-cols-[1fr_350px]">
-        <div>
+        <div className="flex flex-col gap-10">
           <TimeStats data={data} />
-          <BarChart />
+          <BarChart dataDB={data} />
         </div>
         <div></div>
       </div>
