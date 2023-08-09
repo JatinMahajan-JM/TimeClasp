@@ -18,6 +18,12 @@ function getTasksCreatedToday(data: any) {
   return formattedTasks;
 }
 
+// Function to slice the label text
+const sliceLabel = (label: string) => {
+  const maxLength = 10; // Set the maximum length for the label
+  return label.length > maxLength ? label.slice(0, maxLength) + "..." : label;
+};
+
 const BarChart = ({ dataDB }: { dataDB: any }) => {
   const chartRef = useRef<SVGSVGElement | null>(null);
   let data = [
@@ -32,7 +38,7 @@ const BarChart = ({ dataDB }: { dataDB: any }) => {
   useEffect(() => {
     if (chartRef.current) {
       const svg = d3.select(chartRef.current);
-      const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+      const margin = { top: 20, right: 0, bottom: 40, left: 40 };
       const width = 800; // Set the width of the SVG
       const height = 300; // Set the height of the SVG
 
@@ -55,7 +61,21 @@ const BarChart = ({ dataDB }: { dataDB: any }) => {
       const xAxis = (g: d3.Selection<SVGGElement, unknown, null, undefined>) =>
         g
           .attr("transform", `translate(0,${height - margin.bottom})`)
-          .call(d3.axisBottom(x));
+          // .call(d3.axisBottom(x));
+          .call(
+            d3
+              .axisBottom(x)
+              .tickFormat((d) => sliceLabel(d))
+              .tickSize(0)
+              .tickPadding(8)
+          );
+      // g;
+      // .attr("transform", `translate(0,${height - margin.bottom})`)
+      // .call(d3.axisBottom(x)) // Hide default tick labels
+      // .selectAll(".tick text")
+      // .attr("text-anchor", "end") // Anchor the text at the end of the label
+      // .attr("transform", "rotate(-10)") // Rotate the label 45 degrees counter-clockwise
+      // .attr("dx", "-0.5em"); // Offset the label position
 
       const yAxis = (g: d3.Selection<SVGGElement, unknown, null, undefined>) =>
         g
@@ -119,7 +139,7 @@ const BarChart = ({ dataDB }: { dataDB: any }) => {
             .attr("text-anchor", "middle")
             .attr("font-size", "12px")
             .attr("fill", "white")
-            .text(d.hoursWorked + " hours");
+            .text(d.taskName + " : " + d.hoursWorked + " hours");
         })
         .on("mouseleave", function () {
           d3.select(this).transition().duration(10).attr("opacity", "1");
