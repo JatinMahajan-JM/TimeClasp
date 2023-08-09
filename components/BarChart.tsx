@@ -3,21 +3,37 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-const BarChart: React.FC = () => {
+function getTasksCreatedToday(data: any) {
+  const today = new Date().toISOString().slice(0, 10); // Get the current date at midnight
+  const tasksCreatedToday = data.filter(
+    (task: any) => task.createdAt.slice(0, 10) === today
+  );
+
+  const formattedTasks = tasksCreatedToday.map((task: any) => ({
+    // hoursWorked: Math.round(task.timeWorked / 3600),
+    hoursWorked: (task.timeWorked / 3600).toFixed(2),
+    taskName: task.taskName,
+  }));
+
+  return formattedTasks;
+}
+
+const BarChart = ({ dataDB }: { dataDB: any }) => {
   const chartRef = useRef<SVGSVGElement | null>(null);
-  const data = [
+  let data = [
     { taskName: "Project A", hoursWorked: 6 },
     { taskName: "Project B", hoursWorked: 3.5 },
     { taskName: "Project C", hoursWorked: 8 },
     { taskName: "Project D", hoursWorked: 2 },
     { taskName: "Project E", hoursWorked: 5.5 },
   ];
+  data = getTasksCreatedToday(dataDB);
 
   useEffect(() => {
     if (chartRef.current) {
       const svg = d3.select(chartRef.current);
       const margin = { top: 20, right: 20, bottom: 30, left: 40 };
-      const width = 400; // Set the width of the SVG
+      const width = 800; // Set the width of the SVG
       const height = 300; // Set the height of the SVG
 
       svg.attr("viewBox", `0 0 ${width} ${height}`);
@@ -103,7 +119,7 @@ const BarChart: React.FC = () => {
             .attr("text-anchor", "middle")
             .attr("font-size", "12px")
             .attr("fill", "white")
-            .text(d.hoursWorked);
+            .text(d.hoursWorked + " hours");
         })
         .on("mouseleave", function () {
           d3.select(this).transition().duration(10).attr("opacity", "1");
@@ -135,7 +151,11 @@ const BarChart: React.FC = () => {
     }
   }, [data]);
 
-  return <svg ref={chartRef} width={400} height={300}></svg>;
+  return (
+    <div className="w-full">
+      <svg ref={chartRef} height={300} className="m-auto w-full"></svg>
+    </div>
+  );
 };
 
 export default BarChart;
