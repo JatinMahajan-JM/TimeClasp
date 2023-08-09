@@ -74,7 +74,7 @@ function calculateTotalTimeWorkedToday(data: Task[]): string {
 
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
+  const seconds = Math.floor(totalSeconds % 60);
 
   // Format the time
   const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
