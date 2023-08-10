@@ -3,8 +3,8 @@ import SplineChart from "@/components/SplineChart";
 import TimeStats from "@/components/TimeStats";
 
 async function getUpdatedData() {
-  const res = await fetch("http://localhost:3000/api/task", {
-    next: { revalidate: 10000 },
+  const res = await fetch("http://localhost:3000/api/time", {
+    next: { revalidate: 10 },
   });
   return await res.json();
 }
