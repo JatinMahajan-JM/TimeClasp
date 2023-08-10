@@ -12,7 +12,32 @@ interface Props {
   dataDB: DataPoint[];
 }
 
+function generateChartData(data: any) {
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const chartData = Array.from({ length: 31 }, (_, day) => {
+    const xAxisDynamic = day + 1;
+    const filteredTasks = data.filter((task: any) => {
+      const taskDueDate = new Date(task.dueDate);
+      return (
+        taskDueDate.getMonth() === currentMonth &&
+        taskDueDate.getDate() === xAxisDynamic
+      );
+    });
+    // const hours = Math.floor(totalSeconds / 3600);
+    const yAxisDynamic = filteredTasks.reduce(
+      (totalHours: number, task: any) =>
+        totalHours + (task.timeWorked / 3600).toFixed(1),
+      0
+    );
+    return { xAxisDynamic, yAxisDynamic };
+  });
+  return chartData;
+}
+
 const SplineChart: React.FC<Props> = ({ dataDB }) => {
+  const chartData = generateChartData(dataDB);
+  //   console.log(chartData);
   const data = [
     { xAxisDynamic: "Monday", yAxisDynamic: 4 },
     { xAxisDynamic: "Tuesday", yAxisDynamic: 6 },
@@ -33,6 +58,14 @@ const SplineChart: React.FC<Props> = ({ dataDB }) => {
 
     const svg = d3.select(chartRef.current);
     svg.selectAll("*").remove();
+
+    // Inside the useEffect
+    const tooltip = d3
+      .select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+    //
 
     const xScale = d3
       .scalePoint()
@@ -101,6 +134,26 @@ const SplineChart: React.FC<Props> = ({ dataDB }) => {
       .datum(data)
       .attr("fill", "url(#area-gradient)") // Apply the gradient to fill the area
       .attr("d", area); // 'area' should be defined as d3.area() using the same x and y scales
+
+    chart
+      .selectAll("circle")
+      .data(data)
+      .enter()
+      .append("circle")
+      .attr("cx", (d) => xScale(d.xAxisDynamic)!)
+      .attr("cy", (d) => yScale(d.yAxisDynamic))
+      .attr("r", 4)
+      .attr("fill", "#bd6cfd")
+      .on("mouseover", function (event, d) {
+        tooltip.transition().duration(200).style("opacity", 0.9);
+        tooltip
+          .html(`Hours: ${d.yAxisDynamic}`)
+          .style("left", `${event.pageX}px`)
+          .style("top", `${event.pageY - 28}px`);
+      })
+      .on("mouseout", () => {
+        tooltip.transition().duration(500).style("opacity", 0);
+      });
 
     chart
       .append("g")
