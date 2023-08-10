@@ -25,6 +25,7 @@ import {
 import { useContext } from "react";
 import { Ctx } from "./TasksMain";
 import { updateTaskData } from "@/api/tasksApi";
+import { upsertData } from "@/api/timeApi";
 
 const dummyData = [
   {
@@ -99,6 +100,11 @@ export default function Timer({ seconds }: timerProps) {
       //   }),
       // });
       updateTaskData({ _id: selectedTask?._id, data: updateData });
+      upsertData({
+        _id: selectedTask?._id,
+        date: new Date(),
+        timeWorkedToday: seconds,
+      });
 
       // const updatedRes = await fetch("/api/task");
       // const updatedData = await updatedRes.json();
@@ -133,6 +139,11 @@ export default function Timer({ seconds }: timerProps) {
     //   }),
     // });
     updateTaskData({ _id: selectedTask?._id, data: updateData });
+    upsertData({
+      _id: selectedTask?._id,
+      date: new Date(),
+      timeWorkedToday: seconds,
+    });
     // const dataModification = () => {
     //   const modifiedIndex = data.findIndex(
     //     (item) => item._id === selectedTask?._id

@@ -1,11 +1,13 @@
 "use client";
 
+import { updateRepeated } from "@/api/tasksApi";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useEffect } from "react";
 
 const dummyData = [
   {
@@ -122,10 +124,64 @@ function returnColor(category: string) {
   }
 }
 
+const shouldRunTaskToday = (): boolean => {
+  const lastExecutionDate = localStorage.getItem("lastExecutionDate");
+
+  if (lastExecutionDate) {
+    const currentDate = new Date();
+    const storedDate = new Date(lastExecutionDate);
+
+    // Check if the current date is after the stored date (a new day has started)
+    if (currentDate > storedDate) {
+      return true;
+    }
+  } else {
+    // If no last execution date is stored, it's the first time, so run the task
+    return true;
+  }
+
+  return false;
+};
+
+const runTaskOncePerDay = () => {
+  if (shouldRunTaskToday()) {
+    // Execute your task here
+    updateRepeated({ date: new Date() });
+
+    // Update the last execution date in localStorage
+    localStorage.setItem("lastExecutionDate", new Date().toISOString());
+  }
+};
+
 export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
+  useEffect(() => {
+    runTaskOncePerDay();
+  }, []);
   // data = dummyData;
   // Filter pending tasks
   const pendingTasks = data.filter((task) => !task.isCompleted);
+
+  const pending = data.filter((task) => {
+    if (
+      (task.repeat && !task.dueDate) |
+      (task.repeat &&
+        task.dueDate &&
+        task.dueDate.slice(0, 10) >= new Date().toISOString().slice(0, 10))
+    ) {
+      if (task.isCompleted) task.isCompleted = false;
+      return task;
+    }
+    // if (
+    //   task.repeat &&
+    //   task.dueDate.slice(0, 10) > new Date().toISOString().slice(0, 19)
+    // ) {
+    //   if (task.isCompleted) task.isCompleted = false;
+    //   return task;
+    // }
+    if (!task.isCompleted) return task;
+  });
+
+  // console.log(pending);
 
   // Filter completed tasks for today
   const today = new Date().toDateString();

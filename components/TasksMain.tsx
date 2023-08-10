@@ -7,6 +7,7 @@ import NewTaskForm from "./NewTaskForm";
 import { updateTaskData } from "@/api/tasksApi";
 import AllTasks from "./AllTasks";
 import { ActionType, StateType, StateTypeReducer } from "@/types";
+import { upsertData } from "@/api/timeApi";
 
 interface TimerProps {
   data: { [key: string]: any }[];
@@ -105,6 +106,11 @@ export default function TasksMain({ data }: TimerProps) {
       console.log(updateData);
       // updateTaskData(updateData);
       updateTaskData({ _id: lastTask?._id, data: updateData });
+      upsertData({
+        _id: lastTask?._id,
+        date: new Date(),
+        timeWorkedToday: seconds,
+      });
       dispatchFn({
         type: "dataState",
         payload: { data: dataModification(updateData) },
@@ -124,6 +130,8 @@ export default function TasksMain({ data }: TimerProps) {
         console.log(timeCalculated, "timeCalculated");
 
         if (timeCalculated > selectedTask.timeAllocated) {
+          // update the timeWorkedToday for this task.
+          // seconds - selectedTask.timeWorked
           let updateData = {
             timeWorked: seconds,
             isCompleted: true,
@@ -131,6 +139,11 @@ export default function TasksMain({ data }: TimerProps) {
           updateTaskData({
             _id: selectedTask?._id,
             data: updateData,
+          });
+          upsertData({
+            _id: selectedTask?._id,
+            date: new Date(),
+            timeWorkedToday: seconds,
           });
         }
         // dispatchFn({ type: "seconds", payload: { seconds: timeCalculated } });
@@ -186,6 +199,11 @@ export default function TasksMain({ data }: TimerProps) {
           updateTaskData({
             _id: selectedTask?._id,
             data: updateData,
+          });
+          upsertData({
+            _id: selectedTask?._id,
+            date: new Date(),
+            timeWorkedToday: seconds,
           });
 
           dispatchFn({
