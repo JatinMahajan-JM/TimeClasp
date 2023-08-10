@@ -35,7 +35,8 @@ function calculateTotalTimeWorkedThisWeek(data: Task[]): string {
   let totalSeconds = 0;
 
   data.forEach((task) => {
-    if (task.isCompleted && task.timeWorked > 0) {
+    // if (task.isCompleted && task.timeWorked > 0) {
+    if (task.timeWorked > 0) {
       const createdAtDate = task.createdAt.slice(0, 10); // Extract date part from createdAt
       if (createdAtDate >= previousSundayString) {
         totalSeconds += task.timeWorked;
@@ -85,7 +86,7 @@ function calculateTotalTimeWorkedToday(data: Task[]): string {
 }
 
 export default function TimeStats({ data }: { data: any }) {
-  //   console.log(data[0].createdAt.slice(0, 10));
+  console.log(new Date().toISOString().slice(0, 10));
   const totalTimeWorkedToday = calculateTotalTimeWorkedToday(data);
   console.log(totalTimeWorkedToday); // Example output: "04:30:15"
   const totalTimeWorkedThisWeek: string =
