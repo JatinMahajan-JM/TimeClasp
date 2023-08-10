@@ -160,6 +160,15 @@ button {
   display: none;
 }
 
+.tooltip {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
 /* Styles for the Calendar component */
 .react-calendar {
   width: 800px !important;
