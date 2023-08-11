@@ -3,20 +3,55 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-function getTasksCreatedToday(data: any) {
-  const today = new Date().toISOString().slice(0, 10); // Get the current date at midnight
-  const tasksCreatedToday = data.filter(
-    (task: any) => task.createdAt.slice(0, 10) === today
-  );
+// function getTasksCreatedToday(data: any) {
+//   const today = new Date().toISOString().slice(0, 10); // Get the current date at midnight
+//   const tasksCreatedToday = data.filter(
+//     (task: any) => task.createdAt.slice(0, 10) === today
+//   );
 
-  const formattedTasks = tasksCreatedToday.map((task: any) => ({
-    // hoursWorked: Math.round(task.timeWorked / 3600),
-    hoursWorked: (task.timeWorked / 3600).toFixed(2),
-    taskName: task.taskName,
-  }));
+//   const formattedTasks = tasksCreatedToday.map((task: any) => ({
+//     // hoursWorked: Math.round(task.timeWorked / 3600),
+//     hoursWorked: (task.timeWorked / 3600).toFixed(2),
+//     taskName: task.taskName,
+//   }));
 
-  return formattedTasks;
+//   return formattedTasks;
+// }
+
+function getTaskHoursForDate(targetDate: string, dataArray: any) {
+  const targetDateString = new Date(targetDate).toISOString().split("T")[0];
+
+  const resultArray = [];
+
+  for (const data of dataArray) {
+    const tasks = data.tasks;
+    const tasksWorkedOnTargetDate = tasks.filter((task: any) => {
+      return task.timeWorkedToday > 0 && data.date === targetDateString;
+    });
+
+    for (const task of tasksWorkedOnTargetDate) {
+      const hoursWorked = task.timeWorkedToday / 3600; // Convert seconds to hours
+      resultArray.push({
+        taskName: task.taskId.taskName,
+        hoursWorked: Number(hoursWorked.toFixed(2)), // Rounded to 2 decimal places
+      });
+    }
+  }
+
+  return resultArray;
 }
+
+function transformData(inputArray: any) {
+  return inputArray.map((item: any, index: number) => ({
+    taskName: item.tasks[index].taskId.taskName,
+    hoursWorked: (item.tasks[index].timeWorkedToday / 3600).toFixed(2), // Convert minutes to hours
+  }));
+}
+
+// {
+//   date: "....",
+//   tasks: [{ taskId: { taskName: "...." }, timeWorkedToday: 3600 }];
+// }
 
 // Function to slice the label text
 const sliceLabel = (label: string) => {
@@ -25,6 +60,7 @@ const sliceLabel = (label: string) => {
 };
 
 const BarChart = ({ dataDB }: { dataDB: any }) => {
+  console.log(dataDB);
   const chartRef = useRef<SVGSVGElement | null>(null);
   let data = [
     { taskName: "Project A", hoursWorked: 6 },
@@ -33,7 +69,8 @@ const BarChart = ({ dataDB }: { dataDB: any }) => {
     { taskName: "Project D", hoursWorked: 2 },
     { taskName: "Project E", hoursWorked: 5.5 },
   ];
-  data = getTasksCreatedToday(dataDB);
+  data = getTaskHoursForDate(new Date().toISOString().slice(0, 10), dataDB);
+  console.log(data);
 
   useEffect(() => {
     if (chartRef.current) {

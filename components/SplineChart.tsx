@@ -12,6 +12,29 @@ interface Props {
   dataDB: DataPoint[];
 }
 
+function generateChartDataA(dataArray: [], startDate: string, endDate: string) {
+  const result = [];
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  while (start <= end) {
+    const xAxisDynamic = start.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+    const yAxisDynamic = dataArray
+      .filter((item: any) => item.date === start.toISOString().substring(0, 10))
+      .reduce((total, item: any) => total + item.totalTimeWorked, 0);
+
+    result.push({ xAxisDynamic, yAxisDynamic });
+
+    start.setDate(start.getDate() + 1);
+  }
+
+  return result;
+}
+
 function generateChartData(data: any) {
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
