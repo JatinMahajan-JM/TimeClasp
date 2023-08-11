@@ -1,10 +1,12 @@
 import BarChart from "@/components/BarChart";
 import SplineChart from "@/components/SplineChart";
 import TimeStats from "@/components/TimeStats";
+import { headers } from "next/headers";
 
 async function getUpdatedData() {
   const res = await fetch("http://localhost:3000/api/time", {
-    next: { revalidate: 10 },
+    next: { revalidate: 60 },
+    headers: headers(),
   });
   return await res.json();
 }
