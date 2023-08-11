@@ -8,6 +8,11 @@ const timeSchema = new mongoose.Schema({
             timeWorkedToday: { type: Number, default: 0 },
         },
     ],
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "UserModel",
+    },
+    totalTimeWorked: { type: Number, default: 0 }
 }, { timestamps: true })
 
 const timeModel = mongoose.models.timeModel || mongoose.model("timeModel", timeSchema);
