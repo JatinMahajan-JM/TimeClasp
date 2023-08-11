@@ -1,6 +1,7 @@
 import AllTasksClient from "@/components/AllTasksClient";
 import Stopwatch from "@/components/StopWatch";
 import TasksMain from "@/components/TasksMain";
+import { headers } from "next/headers";
 
 async function getAllTasks() {
   const res = await fetch("http://localhost:3000/api/task", {
@@ -12,6 +13,7 @@ async function getAllTasks() {
 async function getUpdatedData() {
   const res = await fetch("http://localhost:3000/api/task", {
     cache: "no-store",
+    headers: headers(),
   });
   // console.log(res);
   return await res.json();
