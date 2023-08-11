@@ -132,7 +132,10 @@ const shouldRunTaskToday = (): boolean => {
     const storedDate = new Date(lastExecutionDate);
 
     // Check if the current date is after the stored date (a new day has started)
-    if (currentDate > storedDate) {
+    if (
+      currentDate.toISOString().slice(0, 10) >
+      storedDate.toISOString().slice(0, 10)
+    ) {
       return true;
     }
   } else {
