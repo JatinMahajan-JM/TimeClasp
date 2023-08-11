@@ -1,14 +1,24 @@
 import { connectToDatabase } from "@/dbConfig/dbConfig";
 import taskModel from "@/models/taskModel";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "../auth/[...nextauth]/[...nextauth]";
+import UserModel from "@/models/userModel";
 
 connectToDatabase();
 
 export async function GET() {
     try {
-        const allTasks = await taskModel.find();
+        const session: any = await getServerSession(authOptions);
+        // console.log(session, "session")
+        let allTasks: any;
+        if (session) {
+            allTasks = await UserModel.findOne({ _id: session.user?.id }).populate("taskList");
+        } else allTasks = { taskList: [] }
+        // console.log(testTasks)
+        // const allTasks = await taskModel.find();
         // console.log(allTasks)
-        return NextResponse.json(allTasks)
+        return NextResponse.json(allTasks.taskList)
     } catch (err: any) {
         console.log(err)
     }
