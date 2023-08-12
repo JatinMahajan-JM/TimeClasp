@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 
 interface DataPoint {
@@ -12,7 +12,11 @@ interface Props {
   dataDB: DataPoint[];
 }
 
-function generateChartDataA(dataArray: [], startDate: string, endDate: string) {
+function generateChartData(
+  dataArray: [{ [key: string]: any }],
+  startDate: string,
+  endDate: string
+) {
   const result = [];
 
   const start = new Date(startDate);
@@ -23,9 +27,15 @@ function generateChartDataA(dataArray: [], startDate: string, endDate: string) {
       month: "short",
       day: "numeric",
     });
-    const yAxisDynamic = dataArray
-      .filter((item: any) => item.date === start.toISOString().substring(0, 10))
-      .reduce((total, item: any) => total + item.totalTimeWorked, 0);
+    // let yAxisDynamic = 0;
+    let yAxisDynamic = Number(
+      (
+        dataArray.filter(
+          (item: any) => item.date === start.toISOString().substring(0, 10)
+        )[0]?.totalTimeWorked / 3600
+      ).toFixed(2)
+    );
+    if (!yAxisDynamic) yAxisDynamic = 0;
 
     result.push({ xAxisDynamic, yAxisDynamic });
 
@@ -35,33 +45,49 @@ function generateChartDataA(dataArray: [], startDate: string, endDate: string) {
   return result;
 }
 
-function generateChartData(data: any) {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const chartData = Array.from({ length: 31 }, (_, day) => {
-    const xAxisDynamic = day + 1;
-    const filteredTasks = data.filter((task: any) => {
-      const taskDueDate = new Date(task.dueDate);
-      return (
-        taskDueDate.getMonth() === currentMonth &&
-        taskDueDate.getDate() === xAxisDynamic
-      );
-    });
-    // const hours = Math.floor(totalSeconds / 3600);
-    const yAxisDynamic = filteredTasks.reduce(
-      (totalHours: number, task: any) =>
-        totalHours + (task.timeWorked / 3600).toFixed(1),
-      0
-    );
-    return { xAxisDynamic, yAxisDynamic };
-  });
-  return chartData;
+function calculateDateRange(rangeInDays: number) {
+  const today = new Date();
+  const endDate = today.toISOString().substring(0, 10); // Current date
+
+  const startDate = new Date(today);
+  startDate.setDate(today.getDate() - rangeInDays + 1); // Calculate start date
+
+  return { startDate: startDate.toISOString().substring(0, 10), endDate };
 }
 
-const SplineChart: React.FC<Props> = ({ dataDB }) => {
-  const chartData = generateChartData(dataDB);
+// function generateChartDataA(data: any) {
+//   const currentDate = new Date();
+//   const currentMonth = currentDate.getMonth();
+//   const chartData = Array.from({ length: 31 }, (_, day) => {
+//     const xAxisDynamic = day + 1;
+//     const filteredTasks = data.filter((task: any) => {
+//       const taskDueDate = new Date(task.dueDate);
+//       return (
+//         taskDueDate.getMonth() === currentMonth &&
+//         taskDueDate.getDate() === xAxisDynamic
+//       );
+//     });
+//     // const hours = Math.floor(totalSeconds / 3600);
+//     const yAxisDynamic = filteredTasks.reduce(
+//       (totalHours: number, task: any) =>
+//         totalHours + (task.timeWorked / 3600).toFixed(1),
+//       0
+//     );
+//     return { xAxisDynamic, yAxisDynamic };
+//   });
+//   return chartData;
+// }
+
+const SplineChart = ({ dataDB }: { dataDB: any }) => {
+  const [range, setRange] = useState(7);
+  const [startDateState, setStartDate] = useState();
+  const [endDateState, setEndDate] = useState();
+  const [ticks, setTicks] = useState(1);
+  const { startDate, endDate } = calculateDateRange(range);
+  const chartData = generateChartData(dataDB, startDate, endDate);
+  console.log(generateChartData(dataDB, startDate, endDate));
   //   console.log(chartData);
-  const data = [
+  let data = [
     { xAxisDynamic: "Monday", yAxisDynamic: 4 },
     { xAxisDynamic: "Tuesday", yAxisDynamic: 6 },
     { xAxisDynamic: "Wednesday", yAxisDynamic: 7 },
@@ -70,7 +96,26 @@ const SplineChart: React.FC<Props> = ({ dataDB }) => {
     { xAxisDynamic: "Saturday", yAxisDynamic: 3 },
     { xAxisDynamic: "Sunday", yAxisDynamic: 2 },
   ];
+  data = chartData;
   const chartRef = useRef<SVGSVGElement | null>(null);
+
+  const handleDaysClick = (event: React.MouseEvent<HTMLElement>) => {
+    const target = event.target as HTMLElement;
+    const classList = target.classList;
+    if (classList.contains("30-days")) {
+      setRange(30);
+      setTicks(5);
+    }
+    if (classList.contains("7-days")) {
+      setTicks(1);
+      setRange(7);
+    }
+    // const itemId = target.classList.contains(""); // Assuming you set this attribute on the element
+    // if (itemId) {
+    //   console.log(`Item clicked: ${itemId}`);
+    //   // Handle the click for the specific item
+    // }
+  };
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -181,12 +226,33 @@ const SplineChart: React.FC<Props> = ({ dataDB }) => {
     chart
       .append("g")
       .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(xScale));
+      // .call(d3.axisBottom(xScale));
+      .call(
+        d3
+          .axisBottom(xScale)
+          .tickValues(xScale.domain().filter((d, i) => i % ticks === 0))
+      );
+    // .call(xAxis);
 
     chart.append("g").call(d3.axisLeft(yScale));
   }, [data]);
 
-  return <svg ref={chartRef} className="m-auto w-full" height="300"></svg>;
+  // return <svg ref={chartRef} className="m-auto w-full" height="300"></svg>;
+  return (
+    <div className="w-full flex gap-6 flex-col">
+      <h1>Hours Committed in Recent Days</h1>
+      <div className="add-border px-4 py-4">
+        <div className="flex justify-between mb-2 py-2 pr-6">
+          <div className="text-sm">Hours/Range</div>
+          <div className="glex gap-2" onClick={handleDaysClick}>
+            <button className="bg-secodaryBtn p-2 7-days">Last 7 days</button>
+            <button className="p-2 add-border 30-days">Last 30 days</button>
+          </div>
+        </div>
+        <svg ref={chartRef} height={300} className="m-auto w-full"></svg>
+      </div>
+    </div>
+  );
 };
 
 export default SplineChart;
