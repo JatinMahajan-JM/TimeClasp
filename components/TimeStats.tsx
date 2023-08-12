@@ -20,6 +20,36 @@ interface Task {
   updatedAt: Date;
 }
 
+function calculateTotalTimeWorked(
+  data: [{ [key: string]: any }],
+  today: string,
+  nDays: number
+) {
+  const oneHourInSeconds = 3600;
+  const endDate = new Date(today);
+  const startDate = new Date(endDate);
+  startDate.setDate(startDate.getDate() - nDays);
+
+  let totalTimeInSeconds = 0;
+
+  for (const entry of data) {
+    const entryDate = new Date(entry.date);
+    if (entryDate >= startDate && entryDate <= endDate) {
+      totalTimeInSeconds += entry.totalTimeWorked;
+    }
+  }
+
+  const totalHours = Math.floor(totalTimeInSeconds / oneHourInSeconds);
+  const totalMinutes = Math.floor((totalTimeInSeconds % oneHourInSeconds) / 60);
+  const totalSeconds = totalTimeInSeconds % 60;
+
+  const formattedHours = totalHours.toString().padStart(2, "0");
+  const formattedMinutes = totalMinutes.toString().padStart(2, "0");
+  const formattedSeconds = totalSeconds.toString().padStart(2, "0");
+
+  return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+}
+
 function calculateTotalTimeWorkedThisWeek(data: Task[]): string {
   const today = new Date();
   const dayOfWeek = today.getDay(); // 0 (Sunday) to 6 (Saturday)
@@ -86,11 +116,16 @@ function calculateTotalTimeWorkedToday(data: Task[]): string {
 }
 
 export default function TimeStats({ data }: { data: any }) {
-  console.log(new Date().toISOString().slice(0, 10));
-  const totalTimeWorkedToday = calculateTotalTimeWorkedToday(data);
-  console.log(totalTimeWorkedToday); // Example output: "04:30:15"
-  const totalTimeWorkedThisWeek: string =
-    calculateTotalTimeWorkedThisWeek(data);
+  const totalTimeWorkedToday = calculateTotalTimeWorked(
+    data,
+    new Date().toISOString().slice(0, 10),
+    1
+  );
+  const totalTimeWorkedThisWeek = calculateTotalTimeWorked(
+    data,
+    new Date().toISOString().slice(0, 10),
+    7
+  );
   console.log(totalTimeWorkedThisWeek); // Example output: "15:30:00"
   return (
     <div className="grid grid-cols-2 gap-4">
