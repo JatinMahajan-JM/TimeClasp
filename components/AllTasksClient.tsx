@@ -8,6 +8,15 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useEffect } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DeleteIcon, Edit2Icon } from "lucide-react";
 
 const dummyData = [
   {
@@ -241,20 +250,44 @@ export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
                   >
                     {task.category?.toUpperCase()}
                   </h4>
-                  <button>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="w-4 h-4"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10.5 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      {/* Open */}
+                      {/* <button> */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="w-4 h-4"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10.5 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {/* </button> */}
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-varPrimary border-solid border-gray-600">
+                      <DropdownMenuLabel>
+                        {task.taskName.slice(0, 15)}...
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator className="bg-gray-400" />
+                      <DropdownMenuItem>
+                        <div className="flex gap-4 items-center">
+                          <Edit2Icon width={15} />
+                          <p>Edit</p>
+                        </div>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <div className="flex gap-4 items-center">
+                          <DeleteIcon width={15} className="text-red-400" />
+                          <p>Delete</p>
+                        </div>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
                 <div className="flex gap-1 flex-col">
                   <h5>{task.taskName}</h5>
