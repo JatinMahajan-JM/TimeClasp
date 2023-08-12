@@ -13,6 +13,8 @@ export async function GET() {
     try {
         let allTasks: any;
         if (session) {
+            if (session.user)
+                console.log("IN here", session)
             allTasks = await timeModel.find({ userId: session.user.id, date: { $gte: thirtyDaysAgo.toISOString().slice(0, 10) } }).populate("tasks.taskId");
         } else allTasks = []
         // const allTasks = await timeModel.find({ date: new Date().toISOString().slice(0, 10) }).populate("tasks.taskId");

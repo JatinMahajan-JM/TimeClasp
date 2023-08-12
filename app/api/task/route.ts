@@ -11,14 +11,16 @@ export async function GET() {
     try {
         const session: any = await getServerSession(authOptions);
         // console.log(session, "session")
-        let allTasks: any;
+        let allTasks: any = [];
         if (session) {
             allTasks = await UserModel.findOne({ _id: session.user?.id }).populate("taskList");
-        } else allTasks = { taskList: [] }
+            allTasks = allTasks.taskList;
+        }
+        // else allTasks = { taskList: [] }
         // console.log(testTasks)
         // const allTasks = await taskModel.find();
         // console.log(allTasks)
-        return NextResponse.json(allTasks.taskList)
+        return NextResponse.json(allTasks)
     } catch (err: any) {
         console.log(err)
     }
