@@ -16,7 +16,8 @@ async function getUpdatedData() {
     headers: headers(),
   });
   // console.log(res);
-  return await res.json();
+  if (res) return await res.json();
+  else return [];
 }
 
 export default async function MyTasks() {
