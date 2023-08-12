@@ -75,7 +75,7 @@ const BarChart = ({ dataDB }: { dataDB: any }) => {
   useEffect(() => {
     if (chartRef.current) {
       const svg = d3.select(chartRef.current);
-      const margin = { top: 20, right: 0, bottom: 40, left: 40 };
+      const margin = { top: 20, right: 0, bottom: 20, left: 40 };
       const width = 800; // Set the width of the SVG
       const height = 300; // Set the height of the SVG
 
@@ -209,8 +209,13 @@ const BarChart = ({ dataDB }: { dataDB: any }) => {
   }, [data]);
 
   return (
-    <div className="w-full">
-      <svg ref={chartRef} height={300} className="m-auto w-full"></svg>
+    <div className="w-full flex gap-6 flex-col">
+      <h1>Task Engagement Today</h1>
+      <svg
+        ref={chartRef}
+        height={300}
+        className="m-auto w-full add-border px-4"
+      ></svg>
     </div>
   );
 };
