@@ -8,6 +8,7 @@ async function getUpdatedData() {
     next: { revalidate: 60 },
     headers: headers(),
   });
+  console.log(res, "the spline chart");
   return await res.json();
 }
 
