@@ -5,7 +5,7 @@ import AllTasksClient from "./AllTasksClient";
 import { Ctx } from "./TasksMain";
 import { updateTaskData } from "@/api/tasksApi";
 
-function AllTasks() {
+function AllTasks({ mod }: { mod: (task: any, modification: string) => void }) {
   // console.log("Re-rendered All Tasks");
   // const { data, selectedTask, isActive, seconds, dispatch } = useContext(Ctx);
   const { data, selectedTask, isActive, dispatch, setSeconds } =
@@ -53,7 +53,7 @@ function AllTasks() {
     // });
     // setSeconds(selectedItem?.timeWorked);
   };
-  return <AllTasksClient data={data} handleClick={handleTaskClick} />;
+  return <AllTasksClient mod={mod} data={data} handleClick={handleTaskClick} />;
 }
 
 export default React.memo(AllTasks);
