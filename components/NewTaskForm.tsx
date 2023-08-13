@@ -1,7 +1,7 @@
 "use client";
 
-import { addNewTask } from "@/api/tasksApi";
-import React, { MouseEvent, useRef, useState } from "react";
+import { addNewTask, updateTaskData } from "@/api/tasksApi";
+import React, { MouseEvent, useEffect, useRef, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -16,16 +16,24 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { CalendarDays } from "lucide-react";
+import { useToast } from "./ui/use-toast";
+import LoadingSpinner from "./ui/loadingSpinner";
 
 interface Subtask {
   id: number;
   task: string;
 }
 
-export function NewTaskForm() {
+interface NewTaskProps {
+  edit: boolean;
+  task?: { [key: string]: any };
+  mod: (task: any, modification: string) => void;
+}
+
+export function NewTaskForm({ edit, task, mod }: NewTaskProps) {
   const taskNameRef = useRef<HTMLInputElement>(null);
   const subTasksRef = useRef<HTMLInputElement>(null);
-  const dueDateRef = useRef<HTMLInputElement>(null);
+  // const dueDateRef = useRef<HTMLInputElement>(null);
   // const priorityRef = useRef<HTMLInputElement>(null);
   // const repeatRef = useRef<HTMLInputElement>(null);
   // const categoryRef = useRef<HTMLInputElement>(null);
@@ -39,10 +47,47 @@ export function NewTaskForm() {
   const [subTaskToggle, setSubTaskToggle] = useState(false);
   const [subTasks, setSubTasks] = useState<Subtask[]>([]);
   const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [completed, setCompleted] = useState("");
 
-  const newTaskHandler = (event: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (task) {
+      setSubTasks(task.subTasks);
+      setDate(task.dueDate);
+      if (task.taskType === 1) setTaskType(true);
+      if (task.taskType === 0) setTaskType(false);
+    }
+  }, []);
+
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  const newTaskHandler = async (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
+    let storedTaskType;
     event.preventDefault();
     let timeAllocated = timeAllocatedRef.current?.value;
+    if (task) {
+      // if (!taskNameRef?.current?.value)
+      //   if (taskNameRef.current) taskNameRef.current.value = task.taskName;
+      // if (!timeAllocatedRef?.current?.value) timeAllocated = task.timeAllocated;
+
+      // if (!taskNameRef?.current?.value)
+      //   if (taskNameRef.current) taskNameRef.current.value = task.taskName;
+      if (taskType) if (task.taskType === 1) storedTaskType = true;
+      if (task.taskType === 0) storedTaskType = false;
+      if (storedTaskType !== taskType) {
+        //true is flex and false is strict
+        if (storedTaskType === true && taskType === false) {
+          // flexible to strict
+          // user changed type but don't mentioned start, end time, it means timeAllocated will remain unchanged.
+          // Action -> change timeAllocated to zero
+          timeAllocated = "";
+        }
+        if (storedTaskType === false && taskType === true) {
+          if (startTimeRef.current) startTimeRef.current.value = "";
+          if (endTimeRef.current) endTimeRef.current.value = "";
+        }
+      }
+    }
     if (
       taskType === false &&
       startTimeRef.current?.value &&
@@ -81,18 +126,83 @@ export function NewTaskForm() {
     }
 
     // console.log(subTasksRef.current?.value);
-    addNewTask({
+    let taskDataArgs = {
       taskName: taskNameRef.current?.value,
       subTasks: subTasks,
       taskType,
-      priority: priorityRef,
+      // priority: priorityRef,
+      priority: task && !priorityRef ? task.priority : priorityRef,
       dueDate: date,
-      repeat: repeatRef,
-      category: categoryRef,
+      repeat: task && !repeatRef ? task.repeat : repeatRef,
+      category: task && !categoryRef ? task.category : categoryRef,
       startTime: startTimeRef.current?.value,
       endTime: endTimeRef.current?.value,
       timeAllocated,
-    });
+    };
+    let toastDescription;
+    let variant = "";
+    if (!edit) {
+      const response = await addNewTask(taskDataArgs);
+      console.log(response);
+      if (response.newTask) {
+        if (taskNameRef.current) taskNameRef.current.value = "";
+        if (subTasksRef.current) subTasksRef.current.value = "";
+        setPriorityRef("");
+        setRepeat("");
+        setCategory("");
+        if (startTimeRef.current) startTimeRef.current.value = "";
+        if (endTimeRef.current) endTimeRef.current.value = "";
+        if (timeAllocatedRef.current) timeAllocatedRef.current.value = "";
+        setTaskType(false);
+        setSubTaskToggle(false);
+        setSubTasks([]);
+        mod(response.newTask, "POST");
+        setLoading(false);
+        toastDescription = response.message;
+      } else {
+        setLoading(false);
+        variant = "destructive";
+        toastDescription = response.message;
+      }
+      toast({
+        variant: variant ? "destructive" : "default",
+        description: toastDescription,
+      });
+    } else {
+      let isCompleted;
+      if (completed === "Completed") isCompleted = true;
+      if (completed === "Pending") isCompleted = false;
+      const response = await updateTaskData({
+        _id: task?._id,
+        data: { ...taskDataArgs, isCompleted },
+      });
+      console.log(response);
+      if (response.task) {
+        // if (taskNameRef.current) taskNameRef.current.value = "";
+        // if (subTasksRef.current) subTasksRef.current.value = "";
+        // setPriorityRef("");
+        // setRepeat("");
+        // setCategory("");
+        // if (startTimeRef.current) startTimeRef.current.value = "";
+        // if (endTimeRef.current) endTimeRef.current.value = "";
+        // if (timeAllocatedRef.current) timeAllocatedRef.current.value = "";
+        // setTaskType(false);
+        // setSubTaskToggle(false);
+        // setSubTasks([]);
+        mod(response.task, "PUT");
+        setLoading(false);
+        toastDescription = "Task has been updated.";
+      } else {
+        setLoading(false);
+        variant = "destructive";
+        toastDescription = "Something went wrong!";
+      }
+      toast({
+        className: "bg-varPrimary text-red-100",
+        variant: variant ? "destructive" : "default",
+        description: toastDescription,
+      });
+    }
   };
 
   const handleSubTask = () => {
@@ -104,27 +214,56 @@ export function NewTaskForm() {
     setSubTasks((prev) => [...prev, newSubtaskObj]);
   };
 
+  let debouncedClick: NodeJS.Timeout | null = null;
+  console.log(subTasks);
+  const handleSubTaskChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: number
+  ) => {
+    if (debouncedClick) {
+      clearTimeout(debouncedClick);
+    }
+
+    // Create a new debounce timeout
+    debouncedClick = setTimeout(() => {
+      // Your actual click handling logic here
+      const index = subTasks.findIndex((item) => item.id === id);
+      setSubTasks((prev) => [
+        ...prev.slice(0, index),
+        { ...prev[index], task: e.target.value },
+        ...prev.slice(index + 1),
+      ]);
+      console.log("Button clicked");
+    }, 300); // Adjust the debounce time (in milliseconds) as needed
+  };
+
   const taskTypeHandler = (event: MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     if (event.target instanceof HTMLElement) {
       if (event.target.classList.contains("flexible-hours")) setTaskType(true);
-      else setTaskType(false);
+      if (event.target.classList.contains("strict-hours")) setTaskType(false);
     }
   };
 
   // console.log("Form re-rendered");
-  console.log(categoryRef);
+  console.log(date, task);
   return (
     <>
-      <section className="lg:px-8 md:w-11/12 lg:w-full md:m-auto">
-        <h1>Create New Task</h1>
+      <section className="lg:px-4 md:w-11/12 lg:w-full md:m-auto">
+        <h1>{!edit ? "Create New Task" : "Edit this Task"}</h1>
         <form
           onSubmit={newTaskHandler}
           className="flex flex-col w-full gap-4 rounde mt-4"
         >
           <div className="flex flex-col gap-2">
             <div className="flex gap-2">
-              <input type="text" placeholder="Task Name" ref={taskNameRef} />
+              <input
+                type="text"
+                placeholder="Task Name"
+                ref={taskNameRef}
+                defaultValue={edit ? task?.taskName : ""}
+                className="w-full"
+              />
               <button
                 type="button"
                 onClick={() => setSubTaskToggle((prev) => !prev)}
@@ -133,14 +272,15 @@ export function NewTaskForm() {
                 +
               </button>
             </div>
-            {subTasks.map((item, index) => (
+            {subTasks.map((item: any, index) => (
               <div className="flex gap-2 items-center">
                 <h6>{index + 1}.</h6>
                 <input
+                  onChange={(e) => handleSubTaskChange(e, item.id)}
                   type="text"
                   defaultValue={item.task}
-                  key={item.id}
-                  className="border-b-2 border-solid border-varPrimary bg-inherit p-0 rounded-none"
+                  key={item.id ? item.id : item._id}
+                  className="border-b-2 border-solid border-varPrimary bg-inherit p-0 rounded-none w-full"
                 />
               </div>
             ))}
@@ -186,7 +326,10 @@ export function NewTaskForm() {
           <div>
             <h5 className="font-bold">Priority and Repeat</h5>
             <div className="flex mt-2">
-              <Select onValueChange={(value) => setPriorityRef(value)}>
+              <Select
+                onValueChange={(value) => setPriorityRef(value)}
+                defaultValue={edit ? task?.priority : undefined}
+              >
                 <SelectTrigger className="w-[180px] add-border shadow-none">
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
@@ -198,7 +341,10 @@ export function NewTaskForm() {
                 </SelectContent>
               </Select>
               <Select onValueChange={(value) => setRepeat(value)}>
-                <SelectTrigger className="w-[180px] ml-2 add-border shadow-none">
+                <SelectTrigger
+                  className="w-[180px] ml-2 add-border shadow-none"
+                  defaultValue={edit ? task?.repeat : ""}
+                >
                   <SelectValue placeholder="Repeat" />
                 </SelectTrigger>
                 <SelectContent className="bg-varPrimary border-none">
@@ -221,7 +367,10 @@ export function NewTaskForm() {
           <div>
             <h5 className="font-bold mb-2">Category and Due Date</h5>
             <div className="flex gap-2">
-              <Select onValueChange={(value) => setCategory(value)}>
+              <Select
+                onValueChange={(value) => setCategory(value)}
+                defaultValue={edit ? task?.category : undefined}
+              >
                 <SelectTrigger className="w-[180px] add-border shadow-none">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
@@ -234,7 +383,12 @@ export function NewTaskForm() {
               </Select>
               <Popover>
                 <PopoverTrigger className="flex gap-2 w-full justify-between p-2 add-border">
-                  <h6 className="text-secondary">Due Date</h6>
+                  <h6 className="text-secondary">
+                    {date && date.toString().slice(0, 15)}
+                    {task?.dueDate && !date && task.dueDate.slice(0, 10)}
+                    {!task && !date && "Due Date"}
+                    {task && !task.dueDate && !date && "No Due Date mentioned"}
+                  </h6>
                   <CalendarDays className="w-4 h-4" />
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 bg-primary" align="start">
@@ -259,11 +413,13 @@ export function NewTaskForm() {
                 type="time"
                 ref={startTimeRef}
                 className="bg-transparent add-border p-1"
+                defaultValue={task?.startTime && task.startTime}
               />
               <input
                 type="time"
                 ref={endTimeRef}
                 className="bg-transparent add-border p-1 ml-2"
+                defaultValue={task?.endTime && task.endTime}
               />
             </div>
           ) : (
@@ -278,7 +434,27 @@ export function NewTaskForm() {
                 max="12:00"
                 ref={timeAllocatedRef}
                 className="bg-transparent add-border p-1"
+                defaultValue={task?.timeAllocated && task.timeAllocated}
               />
+            </div>
+          ) : (
+            ""
+          )}
+          {task ? (
+            <div>
+              <h5 className="font-bold mb-2">Change Task State</h5>
+              <Select
+                onValueChange={(value) => setCompleted(value)}
+                defaultValue={task.isCompleted ? "Completed" : "Pending"}
+              >
+                <SelectTrigger className="w-[180px] add-border shadow-none">
+                  <SelectValue placeholder="Current State" />
+                </SelectTrigger>
+                <SelectContent className="bg-varPrimary border-none">
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           ) : (
             ""
@@ -286,8 +462,11 @@ export function NewTaskForm() {
           <button
             type="submit"
             className="bg-c4 p-2 py-2 rounded-lg text-base font-bold"
+            disabled={loading}
           >
-            Create Task
+            {loading ? <LoadingSpinner size="small" color="text-white" /> : ""}
+            {!edit && !loading && " Create Task"}
+            {edit && !loading && "Update Task"}
           </button>
         </form>
       </section>

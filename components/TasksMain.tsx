@@ -40,6 +40,34 @@ const reducerFn = (state: StateTypeReducer, action: ActionType) => {
       return { ...state, selectedTask: action.payload.selectedTask };
     case "dataState":
       return { ...state, data: action.payload.data };
+    case "modifyData":
+      switch (action.payload.modification) {
+        case "POST":
+          return { ...state, data: [...state.data, action.payload.task] };
+        case "DELETE":
+          const indexDel = state.data.findIndex(
+            (task) => task._id === action.payload.task
+          );
+          return {
+            ...state,
+            data: [
+              ...state.data.slice(0, indexDel),
+              ...state.data.slice(indexDel + 1),
+            ],
+          };
+        case "PUT":
+          const index = state.data.findIndex(
+            (task) => task._id === action.payload.task._id
+          );
+          return {
+            ...state,
+            data: [
+              ...state.data.slice(0, index),
+              action.payload.task,
+              ...state.data.slice(index + 1),
+            ],
+          };
+      }
     case "sendAndSet":
       lastTask = action.payload.lastTask;
       // console.log(action.payload.lastTask);
@@ -72,7 +100,8 @@ export default function TasksMain({ data }: TimerProps) {
     data,
   });
 
-  const { selectedTask, isActive, sendAndSet } = stateMain;
+  const { selectedTask, isActive, sendAndSet, data: d } = stateMain;
+  console.log(d);
   // let secondsRef: MutableRefObject<any> = useRef(selectedTask?.timeWorked);
 
   const dataModification = (updateData: { [key: string]: any }) => {
@@ -149,17 +178,19 @@ export default function TasksMain({ data }: TimerProps) {
         // dispatchFn({ type: "seconds", payload: { seconds: timeCalculated } });
         setSeconds(timeCalculated);
         dispatchFn({ type: "isActive", payload: { active: true } });
-        let value =
-          (timeCalculated /
-            convertTimeStringToMilliseconds(selectedTask.timeAllocated)) *
-          100;
-        dispatchFn({ type: "value", payload: { value } });
+        if (selectedTask.timeAllocated) {
+          let value =
+            (timeCalculated /
+              convertTimeStringToMilliseconds(selectedTask.timeAllocated)) *
+            100;
+          dispatchFn({ type: "value", payload: { value } });
+        }
         // secondsRef.current = timeCalculated;
       } else {
         // console.log(selectedTask, "In else");
         setSeconds(selectedTask?.timeWorked ?? 0);
         let value = 0;
-        if (selectedTask.timeWorked) {
+        if (selectedTask.timeWorked && selectedTask.timeAllocated) {
           value =
             (selectedTask.timeWorked /
               convertTimeStringToMilliseconds(selectedTask.timeAllocated)) *
@@ -235,11 +266,13 @@ export default function TasksMain({ data }: TimerProps) {
 
       interval2 = setInterval(() => {
         let secondsHold = secondsRef.current! + 1;
-        let value =
-          (secondsHold /
-            convertTimeStringToMilliseconds(selectedTask.timeAllocated)) *
-          100;
-        dispatchFn({ type: "value", payload: { value } });
+        if (selectedTask.timeAllocated) {
+          let value =
+            (secondsHold /
+              convertTimeStringToMilliseconds(selectedTask.timeAllocated)) *
+            100;
+          dispatchFn({ type: "value", payload: { value } });
+        }
       }, 1000);
     }
 
@@ -262,12 +295,19 @@ export default function TasksMain({ data }: TimerProps) {
     setModal((prev) => !prev);
   };
 
+  const handleNewTaskorUpdate = (task: any, modification: string) => {
+    dispatchFn({
+      type: "modifyData",
+      payload: { modification, task },
+    });
+  };
+
   return (
     <div className="grid lg:grid-cols-[1fr_350px] gap-8">
       <Ctx.Provider value={ctxValue}>
         <div>
           <Timer seconds={seconds} />
-          <AllTasks />
+          <AllTasks mod={handleNewTaskorUpdate} />
         </div>
         {/* <div className="absolute lg:static top-0 right-0"> */}
         <button
@@ -281,7 +321,7 @@ export default function TasksMain({ data }: TimerProps) {
             modal ? "translate-x-0" : "translate-x-[-200%]"
           } lg:translate-x-0`}
         >
-          <NewTaskForm />
+          <NewTaskForm edit={false} mod={handleNewTaskorUpdate} />
         </div>
         {/* </div> */}
       </Ctx.Provider>

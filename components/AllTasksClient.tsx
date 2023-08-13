@@ -1,13 +1,13 @@
 "use client";
 
-import { updateRepeated } from "@/api/tasksApi";
+import { deleteById, updateRepeated } from "@/api/tasksApi";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +17,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DeleteIcon, Edit2Icon } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { NewTaskForm } from "./NewTaskForm";
+import { useToast } from "./ui/use-toast";
 
 const dummyData = [
   {
@@ -111,6 +121,7 @@ interface AllTaskProps {
   // data: [{ [key: string]: any }];
   data: { [key: string]: any }[];
   handleClick: (id: string) => void;
+  mod: (task: any, modification: string) => void;
 }
 
 interface SubTask {
@@ -165,46 +176,58 @@ const runTaskOncePerDay = () => {
   }
 };
 
-export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
+export default function AllTasksClient({
+  data,
+  handleClick,
+  mod,
+}: AllTaskProps) {
   useEffect(() => {
     runTaskOncePerDay();
   }, []);
   // data = dummyData;
   // Filter pending tasks
-  const pendingTasks = data.filter((task) => !task.isCompleted);
-
-  const pending = data.filter((task) => {
-    if (
-      (task.repeat && !task.dueDate) |
-      (task.repeat &&
-        task.dueDate &&
-        task.dueDate.slice(0, 10) >= new Date().toISOString().slice(0, 10))
-    ) {
-      if (task.isCompleted) task.isCompleted = false;
-      return task;
-    }
-    // if (
-    //   task.repeat &&
-    //   task.dueDate.slice(0, 10) > new Date().toISOString().slice(0, 19)
-    // ) {
-    //   if (task.isCompleted) task.isCompleted = false;
-    //   return task;
-    // }
-    if (!task.isCompleted) return task;
-  });
-
-  // console.log(pending);
-
+  let pending = data.filter((task) => !task.isCompleted);
+  const [pendingTasks, setPendingTasks] = useState(pending);
   // Filter completed tasks for today
   const today = new Date().toDateString();
-  // const completedTasksToday = data.filter(
-  //   (task) => task.isCompleted && task.createdAt?.toDateString() === today
-  // );
-  const completedTasksToday = data.filter(
+  let completedTasks = data.filter(
     (task) =>
       task.isCompleted && new Date(task.createdAt).toDateString() === today
   );
+  const [completedTasksToday, setCompleted] = useState(completedTasks);
+  useEffect(() => {
+    let pending = data.filter((task) => !task.isCompleted);
+    let completedTasks = data.filter(
+      (task) =>
+        task.isCompleted && new Date(task.createdAt).toDateString() === today
+    );
+    setPendingTasks(pending);
+    setCompleted(completedTasks);
+  }, [data]);
+
   // console.log(pendingTasks, completedTasksToday, "Child component", today);
+
+  const { toast } = useToast();
+  const handleTaskDelete = async (id: string) => {
+    // onClick={() => deleteById({ _id: task._id })}
+    const response: any = await deleteById({ _id: id });
+    if (response.message) {
+      // setPendingTasks(pendingTasks.filter((task) => task._id !== id));
+      // setCompleted(completedTasksToday.filter((task) => task._id !== id));
+      mod(id, "DELETE");
+      toast({
+        className: "bg-primary",
+        description: "Task has been deleted.",
+      });
+    } else {
+      toast({
+        className: "bg-primary",
+        variant: "destructive",
+        description: "Uh no! Something went wrong while deleting...",
+      });
+    }
+    console.log("Clicked");
+  };
   return (
     // <>
     //   <h1>Pending</h1>
@@ -251,43 +274,71 @@ export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
                     {task.category?.toUpperCase()}
                   </h4>
 
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      {/* Open */}
-                      {/* <button> */}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="w-4 h-4"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10.5 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      {/* </button> */}
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-varPrimary border-solid border-gray-600">
-                      <DropdownMenuLabel>
-                        {task.taskName.slice(0, 15)}...
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator className="bg-gray-400" />
-                      <DropdownMenuItem>
-                        <div className="flex gap-4 items-center">
-                          <Edit2Icon width={15} />
-                          <p>Edit</p>
-                        </div>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <div className="flex gap-4 items-center">
-                          <DeleteIcon width={15} className="text-red-400" />
-                          <p>Delete</p>
-                        </div>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Dialog>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        {/* Open */}
+                        {/* <button> */}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="w-4 h-4"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10.5 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        {/* </button> */}
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="bg-varPrimary border-solid border-gray-600">
+                        <DropdownMenuLabel>
+                          {task.taskName.slice(0, 15)}...
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator className="bg-gray-400" />
+                        <DropdownMenuItem>
+                          <div className="flex gap-4 items-center">
+                            {/* <Dialog> */}
+                            <Edit2Icon width={15} />
+                            {/* <p>Edit</p> */}
+                            <DialogTrigger>Open</DialogTrigger>
+                            {/* <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>
+                                  Are you sure absolutely sure?
+                                </DialogTitle>
+                                <DialogDescription>
+                                  This action cannot be undone. This will
+                                  permanently delete your account and remove
+                                  your data from our servers.
+                                </DialogDescription>
+                              </DialogHeader>
+                            </DialogContent> */}
+                            {/* </Dialog> */}
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          // onClick={() => deleteById({ _id: task._id })}
+                          onClick={() => handleTaskDelete(task._id)}
+                        >
+                          <div className="flex gap-4 items-center">
+                            <DeleteIcon width={15} className="text-red-400" />
+                            <p>Delete</p>
+                          </div>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <DialogContent className="bg-primary add-border px-2 py-10">
+                      <DialogHeader>
+                        <DialogTitle></DialogTitle>
+                        {/* <DialogDescription> */}
+                        <NewTaskForm mod={mod} edit={true} task={task} />
+                        {/* </DialogDescription> */}
+                      </DialogHeader>
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 <div className="flex gap-1 flex-col">
                   <h5>{task.taskName}</h5>
@@ -329,10 +380,128 @@ export default function AllTasksClient({ data, handleClick }: AllTaskProps) {
       {completedTasksToday.length > 0 && (
         <div>
           <h4 className="text-secondary p-2 pt-8">COMPLETED</h4>
-          <ul>
+          <ul className="grid grid-cols-2 md:grid-cols-3 gap-2 rounded-lg">
             {completedTasksToday.map((task) => (
-              <li key={task._id} onClick={() => handleClick(task._id)}>
-                {task.taskName}
+              <li
+                key={task._id}
+                onClick={() => handleClick(task._id)}
+                className="bg-varPrimary px-4 pl-1 rounded-lg flex gap-4  h-min"
+              >
+                <div
+                  className={`py-1 w-[3px] h-i ${returnColor(task.category)}`}
+                ></div>
+                <div className="flex gap-4 flex-col w-full py-4">
+                  <div className="flex w-full justify-between">
+                    {/* <h2>{task.taskName}</h2> */}
+                    <h4
+                      className={`${returnColor(
+                        task.category
+                      )} p-1 text-black text-xs rounded-md px-4 bg-secondary`}
+                    >
+                      {task.category?.toUpperCase()}
+                    </h4>
+
+                    <Dialog>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          {/* Open */}
+                          {/* <button> */}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="w-4 h-4"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10.5 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          {/* </button> */}
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="bg-varPrimary border-solid border-gray-600">
+                          <DropdownMenuLabel>
+                            {task.taskName.slice(0, 15)}...
+                          </DropdownMenuLabel>
+                          <DropdownMenuSeparator className="bg-gray-400" />
+                          <DropdownMenuItem>
+                            <div className="flex gap-4 items-center">
+                              {/* <Dialog> */}
+                              <Edit2Icon width={15} />
+                              {/* <p>Edit</p> */}
+                              <DialogTrigger>Open</DialogTrigger>
+                              {/* <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>
+                                  Are you sure absolutely sure?
+                                </DialogTitle>
+                                <DialogDescription>
+                                  This action cannot be undone. This will
+                                  permanently delete your account and remove
+                                  your data from our servers.
+                                </DialogDescription>
+                              </DialogHeader>
+                            </DialogContent> */}
+                              {/* </Dialog> */}
+                            </div>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            // onClick={() => deleteById({ _id: task._id })}
+                            onClick={() => handleTaskDelete(task._id)}
+                          >
+                            <div className="flex gap-4 items-center">
+                              <DeleteIcon width={15} className="text-red-400" />
+                              <p>Delete</p>
+                            </div>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      <DialogContent className="bg-primary add-border px-2 py-10">
+                        <DialogHeader>
+                          <DialogTitle></DialogTitle>
+                          {/* <DialogDescription> */}
+                          <NewTaskForm mod={mod} edit={true} task={task} />
+                          {/* </DialogDescription> */}
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  <div className="flex gap-1 flex-col">
+                    <h5>{task.taskName}</h5>
+                    {task.subTasks.length > 0 && (
+                      <Accordion type="single" collapsible>
+                        <AccordionItem value="item-1">
+                          <AccordionTrigger className="text-sm text-secondary">
+                            subtasks
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            {task.subTasks.map(
+                              (item: SubTask, index: number) => (
+                                <div
+                                  className="flex items-center gap-2"
+                                  key={item.id}
+                                >
+                                  <input type="checkbox" />
+                                  <h5 className="text-secondary">
+                                    {/* {index + 1}. */}
+                                    {item?.task}
+                                  </h5>
+                                </div>
+                              )
+                            )}
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    )}
+                  </div>
+                  <div className="flex gap-4">
+                    <span>{task.taskType}</span>
+                    <span>
+                      {task?.startTime}-{task?.endTime}
+                    </span>
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
