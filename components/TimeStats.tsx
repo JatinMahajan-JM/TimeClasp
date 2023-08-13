@@ -41,7 +41,7 @@ function calculateTotalTimeWorked(
 
   const totalHours = Math.floor(totalTimeInSeconds / oneHourInSeconds);
   const totalMinutes = Math.floor((totalTimeInSeconds % oneHourInSeconds) / 60);
-  const totalSeconds = totalTimeInSeconds % 60;
+  const totalSeconds = Math.floor(totalTimeInSeconds % 60);
 
   const formattedHours = totalHours.toString().padStart(2, "0");
   const formattedMinutes = totalMinutes.toString().padStart(2, "0");
@@ -119,12 +119,12 @@ export default function TimeStats({ data }: { data: any }) {
   const totalTimeWorkedToday = calculateTotalTimeWorked(
     data,
     new Date().toISOString().slice(0, 10),
-    1
+    0
   );
   const totalTimeWorkedThisWeek = calculateTotalTimeWorked(
     data,
     new Date().toISOString().slice(0, 10),
-    7
+    6
   );
   console.log(totalTimeWorkedThisWeek); // Example output: "15:30:00"
   return (
