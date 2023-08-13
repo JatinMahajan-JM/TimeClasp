@@ -8,6 +8,7 @@ import AuthProvider from "@/components/AuthProvider";
 import { SignInButton } from "@/components/AuthButtons";
 import { getServerSession } from "next-auth/next";
 import MainNav from "@/components/MainNav";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Josefin_Sans({ subsets: ["latin"], weight: ["500", "700"] });
 // const inter = Roboto({ subsets: ["latin"], weight: "900" });
@@ -45,6 +46,7 @@ export default async function RootLayout({
             </nav>
             {children}
           </main>
+          <Toaster />
         </AuthProvider>
       </body>
     );
