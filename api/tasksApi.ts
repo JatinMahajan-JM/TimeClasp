@@ -27,6 +27,16 @@ export const updateRepeated = errorHandler(async (formData: any) => {
     return await res.json();
 })
 
+export const deleteById = errorHandler(async (formData: any) => {
+    const res = await fetch("/api/task/deleteById", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+    });
+    return await res.json();
+})
+
+
 function errorHandler(func: Function) {
     return async (...args: any[]) => {
         try {
