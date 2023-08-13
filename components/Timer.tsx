@@ -82,6 +82,7 @@ export default function Timer({ seconds }: timerProps) {
   };
 
   const handleStartStop = async () => {
+    if (!selectedTask) return;
     if (seconds !== 0 && selectedTask) {
       let updateData: updateDataType = {
         timeWorked: seconds,
@@ -121,6 +122,7 @@ export default function Timer({ seconds }: timerProps) {
   };
 
   const handleDone = async () => {
+    if (!selectedTask) return;
     dispatch({ type: "isActive", payload: { active: false } });
     let updateData = {
       timeWorked: seconds,
@@ -167,26 +169,36 @@ export default function Timer({ seconds }: timerProps) {
           <div className="relative grid justify-center content-center h-64 ">
             <div
               // #d5b7fc #62ecff
-              className={`pie abs-center absolute shadow-[0_0px_18px_0px_#d5b7fc] ${
-                isActive ? "animate-pulse" : ""
-              }`}
+              className={`pie abs-center transition-all ${
+                selectedTask ? "shadow-[0_0px_18px_0px_#9ce3b4]" : ""
+              } absolute ${isActive ? "animate-pulse" : ""}`}
+              // style={{
+              //   backgroundImage: `conic-gradient(#d5b7fc ${
+              //     value / 4
+              //   }%, #a267ed ${value / 2}%, #b983fb ${
+              //     value / 4 + value / 2
+              //   }%, #d5b7fc ${value}%, #2d3035 0)`,
+              // }}
               style={{
-                backgroundImage: `conic-gradient(#d5b7fc ${
+                backgroundImage: `conic-gradient(#9ce3b4 ${
                   value / 4
-                }%, #a267ed ${value / 2}%, #b983fb ${
+                }%, #acfbc6 ${value / 2}%, #cbfbda ${
                   value / 4 + value / 2
-                }%, #d5b7fc ${value}%, #2d3035 0)`,
+                }%, #a0ffbe ${value}%, #2d3035 0)`,
               }}
             ></div>
             <div
-              className="pie2 abs-center absolute grid items-center justify-center bg-[#1d1f25] cursor-pointer"
+              className={`pie2 transition-all abs-center absolute grid items-center justify-center bg-[#1d1f25] cursor-pointer ${
+                selectedTask ? "text-c3" : "text-gray-500"
+              }`}
               onClick={handleStartStop}
             >
               {formatTime(seconds)}
             </div>
           </div>
-          <div className="text-center flex items-center justify-center gap-12 w-full pt-4 mt-4">
-            <button className="p-2 border border-secodaryBtn border-solid text-secodaryBtn rounded-md">
+          {/* <div className="text-center flex items-center justify-center gap-12 w-full pt-4 mt-4"> */}
+          <div className="text-center pt-4 mt-4">
+            {/* <button className="p-2 border border-secodaryBtn border-solid text-secodaryBtn rounded-md">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -217,12 +229,14 @@ export default function Timer({ seconds }: timerProps) {
                   d="M15.75 5.25v13.5m-7.5-13.5v13.5"
                 />
               </svg>
-            </button>
+            </button> */}
             <button
               onClick={handleDone}
-              className="p-2 border border-secodaryBtn border-solid text-secodaryBtn rounded-md shadow-2xl"
+              // className="p-2 border border-secodaryBtn border-solid text-secodaryBtn rounded-md shadow-2xl"
+              className="border-solid border border-gray-500 p-2 w-full rounded-lg text-gray-400 hover:text-c3 hover:border-c3 transition-all"
             >
-              <svg
+              DONE
+              {/* <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -235,7 +249,7 @@ export default function Timer({ seconds }: timerProps) {
                   strokeLinejoin="round"
                   d="M4.5 12.75l6 6 9-13.5"
                 />
-              </svg>
+              </svg> */}
             </button>
           </div>
         </div>
