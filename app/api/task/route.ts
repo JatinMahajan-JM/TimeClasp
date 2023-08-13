@@ -29,9 +29,15 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
     const { _id, data } = await request.json();
     // console.log(_id, data)
+    let obj: any = { $set: data };
+    if (!data.startTime || !data.endTime) {
+        delete data.startTime;
+        delete data.endTime;
+        obj = { $set: data, $unset: { startTime: 1, endTime: 1 } }
+    }
     try {
-        const a = await taskModel.updateOne({ _id }, { $set: data });
-        return NextResponse.json(a)
+        const a = await taskModel.findOneAndUpdate({ _id }, obj, { new: true });
+        return NextResponse.json({ message: "Update success", task: a }, { status: 200 })
     } catch (error: any) {
         console.log(error);
         return NextResponse.json({ error: error.message }, { status: 500 })
