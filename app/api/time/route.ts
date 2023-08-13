@@ -61,6 +61,9 @@ export async function PUT(request: NextRequest) {
             if (taskToUpdate) {
                 a.totalTimeWorked = a.totalTimeWorked - taskToUpdate.timeWorkedToday + timeWorkedToday;
                 taskToUpdate.timeWorkedToday = timeWorkedToday;
+            } else {
+                a.totalTimeWorked = a.totalTimeWorked + timeWorkedToday;
+                a.tasks.push({ taskId: _id, timeWorkedToday })
             }
         } else {
             // Document doesn't exist, create a new one and add the task
@@ -72,7 +75,7 @@ export async function PUT(request: NextRequest) {
         }
 
         // Save the updated/created document
-        return a.save();
+        a.save();
         return NextResponse.json(a)
     } catch (error: any) {
         console.log(error);
