@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
             // console.log(updateUser);
             updateUser.taskList.push(newTask._id);
             await updateUser.save()
-            return NextResponse.json({ message: "New Task created" }, { status: 200 });
+            return NextResponse.json({ message: "New Task created", newTask }, { status: 200 });
         } else
             return NextResponse.json({ message: "Sign In First" }, { status: 404 });
     } catch (error: any) {
