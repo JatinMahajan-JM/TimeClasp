@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteById, updateRepeated } from "@/api/tasksApi";
+import { deleteById, updateRepeated, updateSubTask } from "@/api/tasksApi";
 import {
   Accordion,
   AccordionContent,
@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dialog";
 import { NewTaskForm } from "./NewTaskForm";
 import { useToast } from "./ui/use-toast";
+import LoadingSpinner from "./ui/loadingSpinner";
 
 const dummyData = [
   {
@@ -125,8 +126,10 @@ interface AllTaskProps {
 }
 
 interface SubTask {
+  _id: string;
   id: number;
   task: string;
+  done: boolean;
 }
 
 function returnColor(category: string) {
@@ -195,6 +198,7 @@ export default function AllTasksClient({
       task.isCompleted && new Date(task.createdAt).toDateString() === today
   );
   const [completedTasksToday, setCompleted] = useState(completedTasks);
+  const [subTasks, setSubTasks] = useState({});
   useEffect(() => {
     let pending = data.filter((task) => !task.isCompleted);
     let completedTasks = data.filter(
@@ -203,12 +207,23 @@ export default function AllTasksClient({
     );
     setPendingTasks(pending);
     setCompleted(completedTasks);
+    const allSubTasks = data.map((task) => {
+      return { _id: task._id, subTasks: task?.subTasks || [] };
+    });
+    setSubTasks(allSubTasks);
   }, [data]);
 
   // console.log(pendingTasks, completedTasksToday, "Child component", today);
 
   const { toast } = useToast();
   const handleTaskDelete = async (id: string) => {
+    toast({
+      className: "bg-varPrimary text-c2",
+      // description: {`updating ...${< LoadingSpinner/>}`},
+      description: (
+        <LoadingSpinner color="white" size="small" desc="Deleting the Task" />
+      ),
+    });
     // onClick={() => deleteById({ _id: task._id })}
     const response: any = await deleteById({ _id: id });
     if (response.message) {
@@ -227,6 +242,46 @@ export default function AllTasksClient({
       });
     }
     console.log("Clicked");
+  };
+
+  let debouncedClick: NodeJS.Timeout | null = null;
+  const handleChecked = (id: string, subId: string) => {
+    toast({
+      className: "bg-varPrimary text-c3",
+      // description: {`updating ...${<LoadingSpinner/>}`},
+      description: (
+        <LoadingSpinner color="white" size="small" desc="Updating your Task" />
+      ),
+    });
+    if (debouncedClick) {
+      clearTimeout(debouncedClick);
+    }
+
+    console.log("outside setimeout");
+    // if (index === -1) index = completedTasksToday.findIndex((task) => task._id);
+
+    // Create a new debounce timeout
+    debouncedClick = setTimeout(async () => {
+      console.log("Handled sub task");
+      let toastDescription;
+      let variant;
+      const response = await updateSubTask({ _id: id, subId });
+      if (response.task) {
+        let task = { _id: id, subId };
+        mod(task, "UPDATE SUBTASK");
+        // setLoading(false);
+        toastDescription = "Task has been updated.";
+      } else {
+        // setLoading(false);
+        variant = "destructive";
+        toastDescription = "Something went wrong!";
+      }
+      toast({
+        className: "bg-varPrimary text-red-100",
+        variant: variant ? "destructive" : "default",
+        description: toastDescription,
+      });
+    }, 3000); // Adjust the debounce time (in milliseconds) as needed
   };
   return (
     // <>
@@ -301,9 +356,11 @@ export default function AllTasksClient({
                         <DropdownMenuItem>
                           <div className="flex gap-4 items-center">
                             {/* <Dialog> */}
-                            <Edit2Icon width={15} />
                             {/* <p>Edit</p> */}
-                            <DialogTrigger>Open</DialogTrigger>
+                            <DialogTrigger className="flex gap-4 text-sm items-center">
+                              <Edit2Icon width={15} />
+                              Update
+                            </DialogTrigger>
                             {/* <DialogContent>
                               <DialogHeader>
                                 <DialogTitle>
@@ -354,9 +411,20 @@ export default function AllTasksClient({
                               className="flex items-center gap-2"
                               key={item.id}
                             >
-                              <input type="checkbox" />
-                              <h5 className="text-secondary">
-                                {/* {index + 1}. */}
+                              <input
+                                type="checkbox"
+                                checked={item.done}
+                                onChange={(e) =>
+                                  handleChecked(task._id, item._id)
+                                }
+                              />
+                              <h5
+                                className={` ${
+                                  item.done
+                                    ? "strikethrough text-gray-600"
+                                    : "text-secondary"
+                                }`}
+                              >
                                 {item?.task}
                               </h5>
                             </div>
@@ -367,7 +435,7 @@ export default function AllTasksClient({
                   )}
                 </div>
                 <div className="flex gap-4">
-                  <span>{task.taskType}</span>
+                  <span>{task.taskType === 0 ? "Strict" : "Flexible"}</span>
                   <span>
                     {task?.startTime}-{task?.endTime}
                   </span>
@@ -428,9 +496,11 @@ export default function AllTasksClient({
                           <DropdownMenuItem>
                             <div className="flex gap-4 items-center">
                               {/* <Dialog> */}
-                              <Edit2Icon width={15} />
                               {/* <p>Edit</p> */}
-                              <DialogTrigger>Open</DialogTrigger>
+                              <DialogTrigger className="flex gap-4 text-sm items-center">
+                                <Edit2Icon width={15} />
+                                Update
+                              </DialogTrigger>
                               {/* <DialogContent>
                               <DialogHeader>
                                 <DialogTitle>
