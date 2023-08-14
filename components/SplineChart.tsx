@@ -210,7 +210,8 @@ const SplineChart = ({ dataDB }: { dataDB: any }) => {
       .append("circle")
       .attr("cx", (d) => xScale(d.xAxisDynamic)!)
       .attr("cy", (d) => yScale(d.yAxisDynamic))
-      .attr("r", 4)
+      .attr("r", 0)
+      // .attr("r", 4)
       .attr("fill", "#bd6cfd")
       .on("mouseover", function (event, d) {
         tooltip.transition().duration(200).style("opacity", 0.9);
@@ -221,12 +222,17 @@ const SplineChart = ({ dataDB }: { dataDB: any }) => {
       })
       .on("mouseout", () => {
         tooltip.transition().duration(500).style("opacity", 0);
-      });
+      })
+      .transition() // Add transition here
+      .duration(500) // Transition duration in milliseconds
+      .attr("r", 4);
 
     chart
       .append("g")
       .attr("transform", `translate(0,${height})`)
       // .call(d3.axisBottom(xScale));
+      .transition() // Add transition here
+      .duration(500)
       .call(
         d3
           .axisBottom(xScale)
@@ -234,17 +240,21 @@ const SplineChart = ({ dataDB }: { dataDB: any }) => {
       );
     // .call(xAxis);
 
-    chart.append("g").call(d3.axisLeft(yScale));
+    chart
+      .append("g")
+      .transition() // Add transition here
+      .duration(500)
+      .call(d3.axisLeft(yScale));
   }, [data]);
 
   // return <svg ref={chartRef} className="m-auto w-full" height="300"></svg>;
   return (
     <div className="w-full flex gap-6 flex-col">
       <h1>Hours Committed in Recent Days</h1>
-      <div className="add-border px-4 py-4">
-        <div className="flex justify-between mb-2 py-2 pr-6">
-          <div className="text-sm">Hours/Range</div>
-          <div className="glex gap-2" onClick={handleDaysClick}>
+      <div className="add-border md:px-4 py-4">
+        <div className="md:flex justify-between mb-2 py-2 pr-6 block px-4">
+          <div className="text-sm md:mt-0 mb-4">Hours/Range</div>
+          <div className="flex gap-2" onClick={handleDaysClick}>
             <button className="bg-secodaryBtn p-2 7-days">Last 7 days</button>
             <button className="p-2 add-border 30-days">Last 30 days</button>
           </div>

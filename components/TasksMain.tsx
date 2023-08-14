@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import Timer from "./Timer";
 import { createContext } from "react";
 import NewTaskForm from "./NewTaskForm";
@@ -45,11 +52,17 @@ const reducerFn = (state: StateTypeReducer, action: ActionType) => {
         case "POST":
           return { ...state, data: [...state.data, action.payload.task] };
         case "DELETE":
+          // if(state.selectedTask._id === action.payload.task)
+          console.log(state.selectedTask, "selected");
           const indexDel = state.data.findIndex(
             (task) => task._id === action.payload.task
           );
           return {
             ...state,
+            selectedTask:
+              state.selectedTask._id === action.payload.task
+                ? null
+                : state.selectedTask,
             data: [
               ...state.data.slice(0, indexDel),
               ...state.data.slice(indexDel + 1),
@@ -61,12 +74,45 @@ const reducerFn = (state: StateTypeReducer, action: ActionType) => {
           );
           return {
             ...state,
+            selectedTask:
+              state.selectedTask._id === action.payload.task._id
+                ? action.payload.task
+                : state.selectedTask,
             data: [
               ...state.data.slice(0, index),
               action.payload.task,
               ...state.data.slice(index + 1),
             ],
           };
+        case "UPDATE SUBTASK":
+          const main = state.data.find(
+            (task) => task._id === action.payload.task._id
+          );
+          const indexMain = state.data.findIndex(
+            (task) => task._id === action.payload.task._id
+          );
+          if (main) {
+            const indexSub = main.subTasks.findIndex(
+              (sub: any) => sub._id === action.payload.task.subId
+            );
+            main.subTasks = [
+              ...main.subTasks.slice(0, indexSub),
+              {
+                ...main.subTasks[indexSub],
+                done: !main.subTasks[indexSub].done,
+              },
+              ...main.subTasks.slice(indexSub + 1),
+            ];
+            console.log(main, indexMain, indexSub, "Here");
+            return {
+              ...state,
+              data: [
+                ...state.data.slice(0, indexMain),
+                main,
+                ...state.data.slice(indexMain + 1),
+              ],
+            };
+          }
       }
     case "sendAndSet":
       lastTask = action.payload.lastTask;
@@ -101,7 +147,7 @@ export default function TasksMain({ data }: TimerProps) {
   });
 
   const { selectedTask, isActive, sendAndSet, data: d } = stateMain;
-  console.log(d);
+  console.log(d, selectedTask);
   // let secondsRef: MutableRefObject<any> = useRef(selectedTask?.timeWorked);
 
   const dataModification = (updateData: { [key: string]: any }) => {
@@ -295,18 +341,27 @@ export default function TasksMain({ data }: TimerProps) {
     setModal((prev) => !prev);
   };
 
-  const handleNewTaskorUpdate = (task: any, modification: string) => {
-    dispatchFn({
-      type: "modifyData",
-      payload: { modification, task },
-    });
-  };
+  // const handleNewTaskorUpdate = (task: any, modification: string) => {
+  //   dispatchFn({
+  //     type: "modifyData",
+  //     payload: { modification, task },
+  //   });
+  // };
+  const handleNewTaskorUpdate = useCallback(
+    (task: any, modification: any) => {
+      dispatchFn({
+        type: "modifyData",
+        payload: { modification, task },
+      });
+    },
+    [dispatchFn]
+  );
 
   return (
     <div className="grid lg:grid-cols-[1fr_350px] gap-8">
       <Ctx.Provider value={ctxValue}>
         <div>
-          <Timer seconds={seconds} />
+          <Timer seconds={seconds} mod={handleNewTaskorUpdate} />
           <AllTasks mod={handleNewTaskorUpdate} />
         </div>
         {/* <div className="absolute lg:static top-0 right-0"> */}

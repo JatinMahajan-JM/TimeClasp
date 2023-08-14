@@ -8,9 +8,12 @@ interface updateDataType {
 
 interface timerProps {
   seconds: number;
+  mod: (task: any, modification: string) => void;
 }
 
 interface SubTask {
+  _id: string;
+  done: boolean;
   id: number;
   task: string;
 }
@@ -24,8 +27,10 @@ import {
 
 import { useContext } from "react";
 import { Ctx } from "./TasksMain";
-import { updateTaskData } from "@/api/tasksApi";
+import { updateSubTask, updateTaskData } from "@/api/tasksApi";
 import { upsertData } from "@/api/timeApi";
+import { useToast } from "./ui/use-toast";
+import LoadingSpinner from "./ui/loadingSpinner";
 
 const dummyData = [
   {
@@ -53,7 +58,7 @@ const dummyData = [
   },
 ];
 
-export default function Timer({ seconds }: timerProps) {
+export default function Timer({ seconds, mod }: timerProps) {
   const { value, isActive, selectedTask, dispatch, data } = useContext(Ctx);
   // console.log(selectedTask);
 
@@ -161,6 +166,47 @@ export default function Timer({ seconds }: timerProps) {
       type: "dataState",
       payload: { data: dataModification(updateData) },
     });
+  };
+
+  const { toast } = useToast();
+  let debouncedClick: NodeJS.Timeout | null = null;
+  const handleChecked = (id: string, subId: string) => {
+    toast({
+      className: "bg-varPrimary text-c3",
+      // description: {`updating ...${<LoadingSpinner/>}`},
+      description: (
+        <LoadingSpinner color="white" size="small" desc="Creating New Task" />
+      ),
+    });
+    if (debouncedClick) {
+      clearTimeout(debouncedClick);
+    }
+
+    console.log("outside setimeout");
+    // if (index === -1) index = completedTasksToday.findIndex((task) => task._id);
+
+    // Create a new debounce timeout
+    debouncedClick = setTimeout(async () => {
+      console.log("Handled sub task");
+      let toastDescription;
+      let variant;
+      const response = await updateSubTask({ _id: id, subId });
+      if (response.task) {
+        let task = { _id: id, subId };
+        mod(task, "UPDATE SUBTASK");
+        // setLoading(false);
+        toastDescription = "Task has been updated.";
+      } else {
+        // setLoading(false);
+        variant = "destructive";
+        toastDescription = "Something went wrong!";
+      }
+      toast({
+        className: "bg-varPrimary text-red-100",
+        variant: variant ? "destructive" : "default",
+        description: toastDescription,
+      });
+    }, 3000); // Adjust the debounce time (in milliseconds) as needed
   };
   return (
     <>
@@ -300,8 +346,20 @@ export default function Timer({ seconds }: timerProps) {
             <div className="flex gap-2 flex-col">
               {selectedTask?.subTasks.map((item: SubTask, index: number) => (
                 <div className="flex items-center gap-2" key={item.id}>
-                  <input type="checkbox" />
-                  <h5 className="text-secondary">{item?.task}</h5>
+                  <input
+                    type="checkbox"
+                    checked={item.done}
+                    onChange={(e) => handleChecked(selectedTask._id, item._id)}
+                  />
+                  <h5
+                    className={` ${
+                      item.done
+                        ? "strikethrough text-gray-600"
+                        : "text-secondary"
+                    }`}
+                  >
+                    {item?.task}
+                  </h5>
                 </div>
               ))}
             </div>

@@ -62,6 +62,14 @@ export function NewTaskForm({ edit, task, mod }: NewTaskProps) {
   const { toast } = useToast();
   const newTaskHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
+    toast({
+      duration: 10000,
+      className: "bg-varPrimary text-c3",
+      // description: {`updating ...${<LoadingSpinner/>}`},
+      description: (
+        <LoadingSpinner color="white" size="small" desc="Creating New Task" />
+      ),
+    });
     let storedTaskType;
     event.preventDefault();
     let timeAllocated = timeAllocatedRef.current?.value;

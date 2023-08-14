@@ -39,15 +39,19 @@ function calculateTotalTimeWorked(
     }
   }
 
-  const totalHours = Math.floor(totalTimeInSeconds / oneHourInSeconds);
-  const totalMinutes = Math.floor((totalTimeInSeconds % oneHourInSeconds) / 60);
-  const totalSeconds = Math.floor(totalTimeInSeconds % 60);
+  if (totalTimeInSeconds > 0) {
+    const totalHours = Math.floor(totalTimeInSeconds / oneHourInSeconds);
+    const totalMinutes = Math.floor(
+      (totalTimeInSeconds % oneHourInSeconds) / 60
+    );
+    const totalSeconds = Math.floor(totalTimeInSeconds % 60);
 
-  const formattedHours = totalHours.toString().padStart(2, "0");
-  const formattedMinutes = totalMinutes.toString().padStart(2, "0");
-  const formattedSeconds = totalSeconds.toString().padStart(2, "0");
+    const formattedHours = totalHours.toString().padStart(2, "0");
+    const formattedMinutes = totalMinutes.toString().padStart(2, "0");
+    const formattedSeconds = totalSeconds.toString().padStart(2, "0");
 
-  return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+  } else return "00:00:00";
 }
 
 function calculateTotalTimeWorkedThisWeek(data: Task[]): string {
@@ -150,14 +154,14 @@ function StatsCard({
 }) {
   return (
     <div
-      className={`flex rounded-md items-center gap-6 text-black p-4 ${classCus}`}
+      className={`flex rounded-md items-center gap-2 md:gap-6 text-black p-4 ${classCus}`}
     >
       <div>
-        <BarChart3 strokeWidth={1} width={60} height={60} />
+        <BarChart3 strokeWidth={1} className="w-10 h-10" />
       </div>
       <div>
         <h5>{name}</h5>
-        <h3 className="font-bolder text-3xl font-extrabold tracking-wider">
+        <h3 className="font-bolder text-base md:text-3xl font-extrabold tracking-wider">
           {time}
         </h3>
       </div>

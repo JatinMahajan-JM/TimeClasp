@@ -41,18 +41,6 @@ function getTaskHoursForDate(targetDate: string, dataArray: any) {
   return resultArray;
 }
 
-function transformData(inputArray: any) {
-  return inputArray.map((item: any, index: number) => ({
-    taskName: item.tasks[index].taskId.taskName,
-    hoursWorked: (item.tasks[index].timeWorkedToday / 3600).toFixed(2), // Convert minutes to hours
-  }));
-}
-
-// {
-//   date: "....",
-//   tasks: [{ taskId: { taskName: "...." }, timeWorkedToday: 3600 }];
-// }
-
 // Function to slice the label text
 const sliceLabel = (label: string) => {
   const maxLength = 10; // Set the maximum length for the label
@@ -75,11 +63,13 @@ const BarChart = ({ dataDB }: { dataDB: any }) => {
   useEffect(() => {
     if (chartRef.current) {
       const svg = d3.select(chartRef.current);
-      const margin = { top: 20, right: 0, bottom: 20, left: 40 };
-      const width = 800; // Set the width of the SVG
-      const height = 300; // Set the height of the SVG
+      const margin = { top: 20, right: 0, bottom: 8, left: 20 };
+      // const width = 800; // Set the width of the SVG
+      // const height = 300; // Set the height of the SVG
+      const width = chartRef.current.clientWidth - margin.left - margin.right;
+      const height = chartRef.current.clientHeight - margin.top - margin.bottom;
 
-      svg.attr("viewBox", `0 0 ${width} ${height}`);
+      // svg.attr("viewBox", `0 0 ${width} ${height}`);
 
       const x = d3
         .scaleBand()
@@ -214,7 +204,8 @@ const BarChart = ({ dataDB }: { dataDB: any }) => {
       <svg
         ref={chartRef}
         height={300}
-        className="m-auto w-full add-border px-4"
+        className="m-auto w-full add-border md:px-4"
+        viewBox=""
       ></svg>
     </div>
   );
