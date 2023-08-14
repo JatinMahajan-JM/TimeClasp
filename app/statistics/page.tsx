@@ -7,7 +7,7 @@ const url = process.env.REQ_URL;
 async function getUpdatedData() {
   const res = await fetch(`${url}/api/time`, {
     next: { revalidate: 180 },
-    headers: headers(),
+    // headers: headers(),
   });
   const data = await res.json();
   //

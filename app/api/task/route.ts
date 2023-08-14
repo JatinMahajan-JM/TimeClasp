@@ -20,9 +20,9 @@ export async function GET() {
         ////
         // const allTasks = await taskModel.find();
         ////
-        return NextResponse.json(allTasks)
+        return NextResponse.json({ allTasks }, { status: 200 })
     } catch (err: any) {
-        //
+        return NextResponse.json({ err }, { status: 404 })
     }
 }
 

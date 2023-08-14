@@ -7,7 +7,9 @@ async function getAllTasks() {
   const res = await fetch(`${url}/api/task`, {
     next: { revalidate: 300000 },
   });
-  return await res.json();
+  const data = await res.json();
+  if (data.allTasks) return data.allTasks;
+  else return [];
 }
 
 async function getUpdatedData() {
@@ -16,7 +18,8 @@ async function getUpdatedData() {
     headers: headers(),
   });
   // //
-  if (res) return await res.json();
+  const data = await res.json();
+  if (data.allTasks) return data.allTasks;
   else return [];
 }
 
