@@ -125,6 +125,10 @@ button {
   font-size: 12px;
 }
 
+.strikethrough {
+  text-decoration: line-through;
+}
+
 .add-border {
   border: 2px solid #292e3c;
 }
