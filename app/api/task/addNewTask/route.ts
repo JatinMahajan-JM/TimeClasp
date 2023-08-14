@@ -4,7 +4,7 @@ import UserModel from "@/models/userModel";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "next-auth/react";
-import { authOptions } from "../../auth/[...nextauth]/[...nextauth]";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 connectToDatabase();
 
