@@ -3,13 +3,19 @@
 import getStripe from "@/utils/get-stripejs";
 import { useState } from "react";
 
+interface ResponseType {
+  status: number;
+  message: string;
+  sessionId: string;
+}
+
 export default function Premium() {
   const [loading, setLoading] = useState(false);
   const handleSubmit = async () => {
     // e.preventDefault();
     setLoading(true);
     // Create a Checkout Session.
-    let response = await fetchPostJSON("/api/checkout_sessions", {
+    let response: ResponseType = await fetchPostJSON("/api/checkout_sessions", {
       amount: 4,
       id: "price_1NaxiYSDv14nZkVL8DehAQ9D",
     });
@@ -21,13 +27,13 @@ export default function Premium() {
 
     // //
     if (response?.status === 500) {
-      console.error(response.message);
+      console.error(response?.message);
       return;
     }
 
     // Redirect to Checkout.
     const stripe = await getStripe();
-    stripe?.redirectToCheckout({ sessionId: response.sessionId });
+    stripe?.redirectToCheckout({ sessionId: response?.sessionId });
     // const { error } = await stripe!.redirectToCheckout({
     //   // Make the id field from the Checkout Session creation API response
     //   // available to this file, so you can provide it as parameter here
