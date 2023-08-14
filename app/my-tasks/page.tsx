@@ -2,7 +2,7 @@ import AllTasksClient from "@/components/AllTasksClient";
 import TasksMain from "@/components/TasksMain";
 import { headers } from "next/headers";
 
-const url = process.env.NEXTAUTH_URL;
+const url = process.env.REQ_URL;
 async function getAllTasks() {
   const res = await fetch(`${url}/api/task`, {
     next: { revalidate: 300000 },

@@ -3,7 +3,7 @@ import SplineChart from "@/components/SplineChart";
 import TimeStats from "@/components/TimeStats";
 import { headers } from "next/headers";
 
-const url = process.env.NEXTAUTH_URL;
+const url = process.env.REQ_URL;
 async function getUpdatedData() {
   const res = await fetch(`${url}/api/time`, {
     next: { revalidate: 180 },
