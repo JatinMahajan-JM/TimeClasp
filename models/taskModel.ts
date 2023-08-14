@@ -8,7 +8,8 @@ const taskSchema = new mongoose.Schema({
     subTasks: [
         {
             id: { type: Number },
-            task: { type: String }
+            task: { type: String },
+            done: { type: Boolean, default: false }
         }
     ],
     category: {
