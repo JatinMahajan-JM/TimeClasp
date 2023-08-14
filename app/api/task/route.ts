@@ -13,7 +13,7 @@ export async function GET() {
         ////
         let allTasks: any = [];
         if (session) {
-            allTasks = await UserModel.findOne({ _id: session.user?.id }).populate("taskList");
+            allTasks = await UserModel.findOne({ email: session.user?.email }).populate("taskList");
             allTasks = allTasks.taskList;
         }
         // else allTasks = { taskList: [] }
