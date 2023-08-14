@@ -8,15 +8,17 @@ async function getUpdatedData() {
     next: { revalidate: 60 },
     headers: headers(),
   });
-  console.log(res, "the spline chart");
-  return await res.json();
+  const data = await res.json();
+  console.log(data, "the spline chart");
+  if (data.allTasks) return data.allTasks;
+  else return [];
 }
 
 export default async function Statistics() {
   const data = await getUpdatedData();
   return (
     <>
-      <div className="grid grid-cols-[1fr_350px]">
+      <div className="grid lg:grid-cols-[1fr_350px] mt-4">
         <div className="flex flex-col gap-10">
           <TimeStats data={data} />
           <BarChart dataDB={data} />
