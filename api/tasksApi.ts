@@ -27,6 +27,15 @@ export const updateRepeated = errorHandler(async (formData: any) => {
     return await res.json();
 })
 
+export const updateSubTask = errorHandler(async (formData: any) => {
+    const res = await fetch("/api/task/updateSubTask", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+    });
+    return await res.json();
+})
+
 export const deleteById = errorHandler(async (formData: any) => {
     const res = await fetch("/api/task/deleteById", {
         method: "DELETE",
