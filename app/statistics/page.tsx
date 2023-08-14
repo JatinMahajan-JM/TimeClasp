@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 
 const url = process.env.REQ_URL;
 async function getUpdatedData() {
-  const res = await fetch(`${url}/api/time`, {
+  const res = await fetch(`${url}/api/time/getTime`, {
     next: { revalidate: 180 },
     // headers: headers(),
   });
