@@ -13,6 +13,7 @@ export const authOptions: NextAuthOptions =
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
         })
     ],
+    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async session({ session }: { session: any }) {
             // store the user id from MongoDB to session
