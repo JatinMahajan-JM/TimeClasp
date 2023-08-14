@@ -1,5 +1,4 @@
 import AllTasksClient from "@/components/AllTasksClient";
-import Stopwatch from "@/components/StopWatch";
 import TasksMain from "@/components/TasksMain";
 import { headers } from "next/headers";
 

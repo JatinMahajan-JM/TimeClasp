@@ -15,7 +15,7 @@ export default function Premium() {
     // e.preventDefault();
     setLoading(true);
     // Create a Checkout Session.
-    let response: ResponseType = await fetchPostJSON("/api/checkout_sessions", {
+    let response: any = await fetchPostJSON("/api/checkout_sessions", {
       amount: 4,
       id: "price_1NaxiYSDv14nZkVL8DehAQ9D",
     });
@@ -53,7 +53,7 @@ export default function Premium() {
   );
 }
 
-export async function fetchPostJSON(url: string, data?: {}) {
+async function fetchPostJSON(url: string, data?: {}) {
   try {
     // Default options are marked with *
     // //
@@ -70,7 +70,7 @@ export async function fetchPostJSON(url: string, data?: {}) {
       referrerPolicy: "no-referrer", // no-referrer, *client
       body: JSON.stringify(data || {}), // body data type must match "Content-Type" header
     });
-    return response.json(); // parses JSON response into native JavaScript objects
+    return await response.json(); // parses JSON response into native JavaScript objects
   } catch (err: any) {
     // throw new Error(err.message);
     //
