@@ -1,6 +1,6 @@
 "use client";
 
-import { addNewTask, updateTaskData } from "@/api/tasksApi";
+import { addNewTask, updateTaskData } from "@/apiCustom/tasksApi";
 import React, { MouseEvent, useEffect, useRef, useState } from "react";
 import {
   Select,

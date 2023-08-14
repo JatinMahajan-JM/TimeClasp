@@ -1,6 +1,10 @@
 "use client";
 
-import { deleteById, updateRepeated, updateSubTask } from "@/api/tasksApi";
+import {
+  deleteById,
+  updateRepeated,
+  updateSubTask,
+} from "@/apiCustom/tasksApi";
 import {
   Accordion,
   AccordionContent,

@@ -11,10 +11,10 @@ import {
 import Timer from "./Timer";
 import { createContext } from "react";
 import NewTaskForm from "./NewTaskForm";
-import { updateTaskData } from "@/api/tasksApi";
+import { updateTaskData } from "@/apiCustom/tasksApi";
 import AllTasks from "./AllTasks";
 import { ActionType, StateType, StateTypeReducer } from "@/types";
-import { upsertData } from "@/api/timeApi";
+import { upsertData } from "@/apiCustom/timeApi";
 
 interface TimerProps {
   data: { [key: string]: any }[];

@@ -3,7 +3,7 @@
 import React, { useContext } from "react";
 import AllTasksClient from "./AllTasksClient";
 import { Ctx } from "./TasksMain";
-import { updateTaskData } from "@/api/tasksApi";
+import { updateTaskData } from "@/apiCustom/tasksApi";
 
 function AllTasks({ mod }: { mod: (task: any, modification: string) => void }) {
   // //

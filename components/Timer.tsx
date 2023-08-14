@@ -27,8 +27,8 @@ import {
 
 import { useContext } from "react";
 import { Ctx } from "./TasksMain";
-import { updateSubTask, updateTaskData } from "@/api/tasksApi";
-import { upsertData } from "@/api/timeApi";
+import { updateSubTask, updateTaskData } from "@/apiCustom/tasksApi";
+import { upsertData } from "@/apiCustom/timeApi";
 import { useToast } from "./ui/use-toast";
 import LoadingSpinner from "./ui/loadingSpinner";
 
