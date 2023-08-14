@@ -3,13 +3,14 @@ import SplineChart from "@/components/SplineChart";
 import TimeStats from "@/components/TimeStats";
 import { headers } from "next/headers";
 
+const url = process.env.NEXTAUTH_URL;
 async function getUpdatedData() {
-  const res = await fetch("http://localhost:3000/api/time", {
-    next: { revalidate: 60 },
+  const res = await fetch(`${url}/api/time`, {
+    next: { revalidate: 180 },
     headers: headers(),
   });
   const data = await res.json();
-  console.log(data, "the spline chart");
+  //
   if (data.allTasks) return data.allTasks;
   else return [];
 }

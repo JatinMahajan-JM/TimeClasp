@@ -15,13 +15,13 @@ export default function MainNav() {
     <div className="flex items-center justify-between">
       <div className="md:hidden block">
         <aside
-          className={`md:px-8 py-4 border-solid border-r-2 border-varPrimary lg:block absolute top-24 w-[91%] bg-primary transition-all z-50 ${
+          className={`md:px-8 py-4 border-solid border-r-2 border-varPrimary lg:block absolute top-24 w-[94%] bg-primary transition-all z-50 left-3 ${
             showMobileMenu ? "translate-x-0" : "-translate-x-[40rem]"
           }`}
         >
           <div className="w-full">
             <SignInButton />
-            <SidePortal sections={sidePortalConfig} />
+            <SidePortal sections={sidePortalConfig} click={handleClick} />
           </div>
         </aside>
         <button onClick={handleClick}>

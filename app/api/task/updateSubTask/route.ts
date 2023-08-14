@@ -19,12 +19,12 @@ export async function PUT(request: NextRequest) {
 
             // Save the parent document to persist changes
             await task.save();
-            console.log('Subtask updated:');
+            //
             return NextResponse.json({ task: "updated" }, { status: 200 })
         };
         return NextResponse.json({ message: "No task found" }, { status: 404 })
     } catch (error: any) {
-        console.log(error);
+        //
         return NextResponse.json({ error: error.message }, { status: 500 })
     }
 }

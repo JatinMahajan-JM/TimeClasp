@@ -3,19 +3,20 @@ import Stopwatch from "@/components/StopWatch";
 import TasksMain from "@/components/TasksMain";
 import { headers } from "next/headers";
 
+const url = process.env.NEXTAUTH_URL;
 async function getAllTasks() {
-  const res = await fetch("http://localhost:3000/api/task", {
+  const res = await fetch(`${url}/api/task`, {
     next: { revalidate: 300000 },
   });
   return await res.json();
 }
 
 async function getUpdatedData() {
-  const res = await fetch("http://localhost:3000/api/task", {
+  const res = await fetch(`${url}/api/task`, {
     cache: "no-store",
     headers: headers(),
   });
-  // console.log(res);
+  // //
   if (res) return await res.json();
   else return [];
 }

@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function DELETE(request: NextRequest) {
     const { _id } = await request.json();
     try {
-        console.log(_id, "ToDeleteId")
+        //
         const taskToDelete = await taskModel.findOne({ _id })
         if (!taskToDelete) return NextResponse.json({ message: "Task not found" }, { status: 404 });
 

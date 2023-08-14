@@ -130,7 +130,7 @@ export default function TimeStats({ data }: { data: any }) {
     new Date().toISOString().slice(0, 10),
     6
   );
-  console.log(totalTimeWorkedThisWeek); // Example output: "15:30:00"
+  // // Example output: "15:30:00"
   return (
     <div className="grid grid-cols-2 gap-4">
       <StatsCard name="Today" classCus="bg-c3" time={totalTimeWorkedToday} />

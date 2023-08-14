@@ -213,7 +213,7 @@ export default function AllTasksClient({
     setSubTasks(allSubTasks);
   }, [data]);
 
-  // console.log(pendingTasks, completedTasksToday, "Child component", today);
+  // //
 
   const { toast } = useToast();
   const handleTaskDelete = async (id: string) => {
@@ -241,7 +241,7 @@ export default function AllTasksClient({
         description: "Uh no! Something went wrong while deleting...",
       });
     }
-    console.log("Clicked");
+    //
   };
 
   let debouncedClick: NodeJS.Timeout | null = null;
@@ -257,12 +257,12 @@ export default function AllTasksClient({
       clearTimeout(debouncedClick);
     }
 
-    console.log("outside setimeout");
+    //
     // if (index === -1) index = completedTasksToday.findIndex((task) => task._id);
 
     // Create a new debounce timeout
     debouncedClick = setTimeout(async () => {
-      console.log("Handled sub task");
+      //
       let toastDescription;
       let variant;
       const response = await updateSubTask({ _id: id, subId });

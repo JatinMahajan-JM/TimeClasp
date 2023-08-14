@@ -38,18 +38,18 @@
 //             );
 //         } catch (err: any) {
 //             // On error, log and return the error message.
-//             console.log(`❌ Error message: ${err.message}`);
+//             //
 //             res.status(400).send(`Webhook Error: ${err.message}`);
 //             return;
 //         }
 
 //         // Successfully constructed event.
-//         console.log('✅ Success:', event.id);
+//         //
 
 //         // Cast event data to Stripe object.
 //         if (event.type === 'payment_intent.succeeded') {
 //             const paymentIntent = event.data.object as Stripe.PaymentIntent;
-//             console.log(`💰 PaymentIntent status: ${paymentIntent.status}`);
+//             //
 //         } else if (event.type === 'payment_intent.payment_failed') {
 //             const paymentIntent = event.data.object as Stripe.PaymentIntent;
 //             console.log(
@@ -57,7 +57,7 @@
 //             );
 //         } else if (event.type === 'charge.succeeded') {
 //             const charge = event.data.object as Stripe.Charge;
-//             console.log(`💵 Charge id: ${charge.id}`);
+//             //
 //         } else {
 //             console.warn(`🤷‍♀️ Unhandled event type: ${event.type}`);
 //         }
@@ -97,7 +97,7 @@ export async function POST(req: Request) {
         if (!sig || !webhookSecret) return;
         event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     } catch (err: any) {
-        console.log(`❌ Error message: ${err.message}`);
+        //
         return new Response(`Webhook Error: ${err.message}`, { status: 400 });
     }
 
@@ -115,7 +115,7 @@ export async function POST(req: Request) {
                 case 'customer.subscription.created':
                 case 'customer.subscription.updated':
                 case 'customer.subscription.deleted':
-                    console.log(event.data.object)
+                    //
                     const subscription = event.data.object as Stripe.Subscription;
                     //   await manageSubscriptionStatusChange(
                     //     subscription.id,
@@ -138,7 +138,7 @@ export async function POST(req: Request) {
                     throw new Error('Unhandled relevant event!');
             }
         } catch (error) {
-            console.log(error);
+            //
             return new Response(
                 'Webhook handler failed. View your nextjs function logs.',
                 {

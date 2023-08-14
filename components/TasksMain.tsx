@@ -53,7 +53,7 @@ const reducerFn = (state: StateTypeReducer, action: ActionType) => {
           return { ...state, data: [...state.data, action.payload.task] };
         case "DELETE":
           // if(state.selectedTask._id === action.payload.task)
-          console.log(state.selectedTask, "selected");
+          //
           const indexDel = state.data.findIndex(
             (task) => task._id === action.payload.task
           );
@@ -103,7 +103,7 @@ const reducerFn = (state: StateTypeReducer, action: ActionType) => {
               },
               ...main.subTasks.slice(indexSub + 1),
             ];
-            console.log(main, indexMain, indexSub, "Here");
+            //
             return {
               ...state,
               data: [
@@ -116,7 +116,7 @@ const reducerFn = (state: StateTypeReducer, action: ActionType) => {
       }
     case "sendAndSet":
       lastTask = action.payload.lastTask;
-      // console.log(action.payload.lastTask);
+      // //
       return { ...state, sendAndSet: action.payload.data };
     default:
       return state;
@@ -147,7 +147,7 @@ export default function TasksMain({ data }: TimerProps) {
   });
 
   const { selectedTask, isActive, sendAndSet, data: d } = stateMain;
-  console.log(d, selectedTask);
+  //
   // let secondsRef: MutableRefObject<any> = useRef(selectedTask?.timeWorked);
 
   const dataModification = (updateData: { [key: string]: any }) => {
@@ -158,7 +158,7 @@ export default function TasksMain({ data }: TimerProps) {
       modifiedIndex = data.findIndex((item) => item._id === selectedTask?._id);
     }
     lastTask === null;
-    console.log(updateData.timeWorked, "data mod");
+    //
     const newDataState = [...data]; // Create a copy of the state array
     newDataState[modifiedIndex] = {
       ...newDataState[modifiedIndex],
@@ -170,7 +170,7 @@ export default function TasksMain({ data }: TimerProps) {
   // Get a request from the child to update the task data, if the user click on other task
   useEffect(() => {
     if (sendAndSet === "sendAndSet") {
-      // console.log(seconds, selectedTask, lastTask);
+      // //
       let updateData = {
         // timeWorked: lastSeconds,
         timeWorked: seconds,
@@ -178,7 +178,7 @@ export default function TasksMain({ data }: TimerProps) {
         timerEnded: true,
         lastTask,
       };
-      console.log(updateData);
+      //
       // updateTaskData(updateData);
       updateTaskData({ _id: lastTask?._id, data: updateData });
       upsertData({
@@ -202,7 +202,7 @@ export default function TasksMain({ data }: TimerProps) {
         const timeCalculated =
           (Date.now() - selectedTask.timerStartTime) / 1000 +
           selectedTask.timeWorked;
-        console.log(timeCalculated, "timeCalculated");
+        //
 
         if (timeCalculated > selectedTask.timeAllocated) {
           // update the timeWorkedToday for this task.
@@ -233,7 +233,7 @@ export default function TasksMain({ data }: TimerProps) {
         }
         // secondsRef.current = timeCalculated;
       } else {
-        // console.log(selectedTask, "In else");
+        // //
         setSeconds(selectedTask?.timeWorked ?? 0);
         let value = 0;
         if (selectedTask.timeWorked && selectedTask.timeAllocated) {
@@ -247,8 +247,8 @@ export default function TasksMain({ data }: TimerProps) {
       // else secondsRef.current = selectedTask.timeWorked;
     }
   }, [selectedTask]);
-  console.log(stateMain.value);
-  // console.log(seconds);
+  //
+  // //
 
   // useEffect to set the task to completed, when timeTillCompletion reaches zero.
   // Runs when user start the timer or when the timer is not turned off and the browser is refreshed.

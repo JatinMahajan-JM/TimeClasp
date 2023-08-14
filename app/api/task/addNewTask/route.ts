@@ -17,15 +17,15 @@ interface User {
 export async function POST(request: NextRequest) {
     try {
         const { taskName, subTasks, taskType, priority, dueDate, repeat, startTime, endTime, timeAllocated, category } = await request.json();
-        // console.log(taskName, subTasks, taskType, priority, dueDate, repeat, startTime, endTime, timeAllocated)
+        ////
         const session = await getServerSession(authOptions) as User;
         if (session) {
             const newTask = new taskModel({ taskName, subTasks, taskType, priority, dueDate, repeat, startTime, endTime, timeAllocated, category })
             await newTask.save();
             // const session = await getServerSession() as User;
-            // console.log(session)
+            ////
             const updateUser = await UserModel.findOne({ _id: session.user.id })
-            // console.log(updateUser);
+            // //
             updateUser.taskList.push(newTask._id);
             await updateUser.save()
             return NextResponse.json({ message: "New Task created", newTask }, { status: 200 });

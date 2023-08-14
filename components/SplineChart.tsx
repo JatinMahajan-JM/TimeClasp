@@ -85,8 +85,8 @@ const SplineChart = ({ dataDB }: { dataDB: any }) => {
   const [ticks, setTicks] = useState(1);
   const { startDate, endDate } = calculateDateRange(range);
   const chartData = generateChartData(dataDB, startDate, endDate);
-  console.log(generateChartData(dataDB, startDate, endDate));
-  //   console.log(chartData);
+  //);
+  //   //
   let data = [
     { xAxisDynamic: "Monday", yAxisDynamic: 4 },
     { xAxisDynamic: "Tuesday", yAxisDynamic: 6 },
@@ -99,20 +99,23 @@ const SplineChart = ({ dataDB }: { dataDB: any }) => {
   data = chartData;
   const chartRef = useRef<SVGSVGElement | null>(null);
 
+  const [activeBtn, setActive] = useState(true);
   const handleDaysClick = (event: React.MouseEvent<HTMLElement>) => {
     const target = event.target as HTMLElement;
     const classList = target.classList;
     if (classList.contains("30-days")) {
       setRange(30);
       setTicks(5);
+      setActive(false);
     }
     if (classList.contains("7-days")) {
       setTicks(1);
       setRange(7);
+      setActive(true);
     }
     // const itemId = target.classList.contains(""); // Assuming you set this attribute on the element
     // if (itemId) {
-    //   console.log(`Item clicked: ${itemId}`);
+    //   //
     //   // Handle the click for the specific item
     // }
   };
@@ -247,6 +250,7 @@ const SplineChart = ({ dataDB }: { dataDB: any }) => {
       .call(d3.axisLeft(yScale));
   }, [data]);
 
+  // const [activeBtn, setActive] = useState(true)
   // return <svg ref={chartRef} className="m-auto w-full" height="300"></svg>;
   return (
     <div className="w-full flex gap-6 flex-col">
@@ -255,8 +259,20 @@ const SplineChart = ({ dataDB }: { dataDB: any }) => {
         <div className="md:flex justify-between mb-2 py-2 pr-6 block px-4">
           <div className="text-sm md:mt-0 mb-4">Hours/Range</div>
           <div className="flex gap-2" onClick={handleDaysClick}>
-            <button className="bg-secodaryBtn p-2 7-days">Last 7 days</button>
-            <button className="p-2 add-border 30-days">Last 30 days</button>
+            <button
+              className={` p-2 7-days transition-all add-border ${
+                activeBtn ? "bg-secodaryBtn" : ""
+              }`}
+            >
+              Last 7 days
+            </button>
+            <button
+              className={`p-2 30-days transition-all add-border ${
+                !activeBtn ? "bg-secodaryBtn" : ""
+              }`}
+            >
+              Last 30 days
+            </button>
           </div>
         </div>
         <svg ref={chartRef} height={300} className="m-auto w-full"></svg>

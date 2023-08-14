@@ -60,7 +60,7 @@ const dummyData = [
 
 export default function Timer({ seconds, mod }: timerProps) {
   const { value, isActive, selectedTask, dispatch, data } = useContext(Ctx);
-  // console.log(selectedTask);
+  // //
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
@@ -182,12 +182,12 @@ export default function Timer({ seconds, mod }: timerProps) {
       clearTimeout(debouncedClick);
     }
 
-    console.log("outside setimeout");
+    //
     // if (index === -1) index = completedTasksToday.findIndex((task) => task._id);
 
     // Create a new debounce timeout
     debouncedClick = setTimeout(async () => {
-      console.log("Handled sub task");
+      //
       let toastDescription;
       let variant;
       const response = await updateSubTask({ _id: id, subId });

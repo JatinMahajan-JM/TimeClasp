@@ -76,6 +76,18 @@ body {
   border-radius: 50%;
 }
 
+@media (min-width: 700px) and (max-width: 1110px) {
+  .pie {
+    width: 200px;
+    height: 200px;
+  }
+
+  .pie2 {
+    width: 194px;
+    height: 194px;
+  }
+}
+
 /* .pie {
   width: 200px;
   height: 200px;

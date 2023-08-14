@@ -48,7 +48,7 @@ const sliceLabel = (label: string) => {
 };
 
 const BarChart = ({ dataDB }: { dataDB: any }) => {
-  console.log(dataDB);
+  //
   const chartRef = useRef<SVGSVGElement | null>(null);
   let data = [
     { taskName: "Project A", hoursWorked: 6 },
@@ -58,7 +58,7 @@ const BarChart = ({ dataDB }: { dataDB: any }) => {
     { taskName: "Project E", hoursWorked: 5.5 },
   ];
   data = getTaskHoursForDate(new Date().toISOString().slice(0, 10), dataDB);
-  console.log(data);
+  //
 
   useEffect(() => {
     if (chartRef.current) {
@@ -152,7 +152,7 @@ const BarChart = ({ dataDB }: { dataDB: any }) => {
         // .attr("class", "bar")
         .on("mouseenter", function (event, d) {
           d3.select(this).transition().duration(10).attr("opacity", ".35");
-          // console.log(textGroup);
+          // //
           // const textLabel = textGroup.select(`#text-${d.taskName}`);
           // textLabel.style("opacity", 1); // Make text label visible on hover
           const xPos =
@@ -173,7 +173,7 @@ const BarChart = ({ dataDB }: { dataDB: any }) => {
           svg.selectAll(".hover-text").remove();
         })
         // .on("mouseout", function (event, d) {
-        //   console.log(d);
+        //   //
         //   const textLabel = textGroup.select(`#text-${d.taskName}`);
         //   textLabel.style("opacity", 0); // Make text label invisible on mouseout
         // })

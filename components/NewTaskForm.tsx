@@ -130,10 +130,10 @@ export function NewTaskForm({ edit, task, mod }: NewTaskProps) {
         .padStart(2, "0")}`;
 
       timeAllocated = result;
-      // console.log(timeAllocated);
+      // //
     }
 
-    // console.log(subTasksRef.current?.value);
+    // //
     let taskDataArgs = {
       taskName: taskNameRef.current?.value,
       subTasks: subTasks,
@@ -151,7 +151,7 @@ export function NewTaskForm({ edit, task, mod }: NewTaskProps) {
     let variant = "";
     if (!edit) {
       const response = await addNewTask(taskDataArgs);
-      console.log(response);
+      //
       if (response.newTask) {
         if (taskNameRef.current) taskNameRef.current.value = "";
         if (subTasksRef.current) subTasksRef.current.value = "";
@@ -184,7 +184,7 @@ export function NewTaskForm({ edit, task, mod }: NewTaskProps) {
         _id: task?._id,
         data: { ...taskDataArgs, isCompleted },
       });
-      console.log(response);
+      //
       if (response.task) {
         // if (taskNameRef.current) taskNameRef.current.value = "";
         // if (subTasksRef.current) subTasksRef.current.value = "";
@@ -220,10 +220,11 @@ export function NewTaskForm({ edit, task, mod }: NewTaskProps) {
       task: subTasksRef.current?.value!,
     };
     setSubTasks((prev) => [...prev, newSubtaskObj]);
+    if (subTasksRef.current) subTasksRef.current.value = "";
   };
 
   let debouncedClick: NodeJS.Timeout | null = null;
-  console.log(subTasks);
+  //
   const handleSubTaskChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     id: number
@@ -241,7 +242,7 @@ export function NewTaskForm({ edit, task, mod }: NewTaskProps) {
         { ...prev[index], task: e.target.value },
         ...prev.slice(index + 1),
       ]);
-      console.log("Button clicked");
+      //
     }, 300); // Adjust the debounce time (in milliseconds) as needed
   };
 
@@ -253,8 +254,8 @@ export function NewTaskForm({ edit, task, mod }: NewTaskProps) {
     }
   };
 
-  // console.log("Form re-rendered");
-  console.log(date, task);
+  // //
+  //
   return (
     <>
       <section className="lg:px-4 md:w-11/12 lg:w-full md:m-auto">

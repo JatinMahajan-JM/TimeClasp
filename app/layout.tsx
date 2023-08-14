@@ -41,7 +41,7 @@ export default async function RootLayout({
             </div>
           </aside>
           <main className="p-3 md:pl-8 py-8">
-            <nav className="add-border p-2 mb-2 lg:hidden block">
+            <nav className="add-border p-2 mb-2 h-[3.14rem] lg:h-auto lg:hidden block">
               <MainNav />
             </nav>
             {children}
@@ -51,37 +51,37 @@ export default async function RootLayout({
       </body>
     );
   } else {
-    main = (
-      <body
-        className={
-          inter.className +
-          " grid lg:grid-cols-[300px_1fr] md:grid-cols-[240px_1fr]"
-        }
-      >
-        <AuthProvider>
-          <aside className="px-8 py-4 border-solid border-r-2 border-varPrimary hidden md:block">
-            <div className="w-full">
-              <SignInButton />
-              <SidePortal sections={sidePortalConfig} />
-            </div>
-          </aside>
-          <main className="md:pl-8 py-8 p-3">
-            <nav className="add-border p-2 mb-2">
-              <MainNav />
-            </nav>
-            {children}
-          </main>
-        </AuthProvider>
-      </body>
-    );
     // main = (
-    //   <body>
+    //   <body
+    //     className={
+    //       inter.className +
+    //       " grid lg:grid-cols-[300px_1fr] md:grid-cols-[240px_1fr]"
+    //     }
+    //   >
     //     <AuthProvider>
-    //       <h1>Sign in to access</h1>
-    //       <SignInButton />
+    //       <aside className="px-8 py-4 border-solid border-r-2 border-varPrimary hidden md:block">
+    //         <div className="w-full">
+    //           <SignInButton />
+    //           <SidePortal sections={sidePortalConfig} />
+    //         </div>
+    //       </aside>
+    //       <main className="md:pl-8 py-8 p-3">
+    //         <nav className="add-border p-2 mb-2">
+    //           <MainNav />
+    //         </nav>
+    //         {children}
+    //       </main>
     //     </AuthProvider>
     //   </body>
     // );
+    main = (
+      <body className="grid content-center justify-center gap-4 items-center w-screen h-screen">
+        <AuthProvider>
+          <h1 className="font-bold text-lg ">SIGN IN TO ACCESS THE APP</h1>
+          <SignInButton />
+        </AuthProvider>
+      </body>
+    );
   }
   return (
     <html lang="en">

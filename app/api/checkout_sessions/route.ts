@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
         // 1. Retrieve the information from request
         // const { data: price, metadata = {} } = await req.json();
         const body = await req.json();
-        // console.log(body, "body")
+        ////
         const { amount, id, metadata = {} } = body;
 
 
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
             // 4. Create a checkout session in stripe
             let stripeSession;
-            // console.log(price, "price", await req.json())
+            ////)
             // if (price.type === 'recurring') {
             stripeSession = await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
             });
             // }
             if (session) {
-                // console.log(stripeSession)
+                ////
                 return new Response(JSON.stringify({ sessionId: stripeSession?.id }), {
                     status: 200
                 });
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
                 );
             }
         } catch (error: any) {
-            console.log(error)
+            //
         }
     } else {
         return new Response('Method Not Allowed', {

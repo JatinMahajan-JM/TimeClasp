@@ -51,7 +51,7 @@ export default function Calendar() {
   const handleDateChange = (date: Date) => {
     setSelectedDate(date);
     // Handle any other logic you want when the date changes
-    // console.log("Selected date:", date);
+    // //
   };
 
   // Function to get the selected task for the selected date

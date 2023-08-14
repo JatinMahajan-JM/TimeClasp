@@ -22,7 +22,7 @@ const reducerFn = (state: StateType, action: ActionType) => {
     case "value":
       return { ...state, value: action.payload.value };
     case "seconds":
-      console.log("Inside reducer function", action.payload.seconds);
+      //
       return { ...state, seconds: action.payload.seconds };
     case "isActive":
       return { ...state, isActive: action.payload.active };
@@ -49,14 +49,14 @@ export default function RedCheck() {
   };
 
   const { isActive, seconds } = stateMain;
-  console.log("here", seconds);
+  //
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
     if (isActive) {
       interval = setInterval(() => {
-        console.log("interval", seconds);
+        //
         let secondsHold = seconds + 1;
         dispatchFn({ type: "seconds", payload: { seconds: secondsHold } });
         // setSeconds((prevSeconds) => prevSeconds + 1);

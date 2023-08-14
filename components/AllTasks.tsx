@@ -6,11 +6,11 @@ import { Ctx } from "./TasksMain";
 import { updateTaskData } from "@/api/tasksApi";
 
 function AllTasks({ mod }: { mod: (task: any, modification: string) => void }) {
-  // console.log("Re-rendered All Tasks");
+  // //
   // const { data, selectedTask, isActive, seconds, dispatch } = useContext(Ctx);
   const { data, selectedTask, isActive, dispatch, setSeconds } =
     useContext(Ctx);
-  // console.log(stateRef);
+  // //
 
   const dataModification = (updateData: { [key: string]: any }) => {
     const modifiedIndex = data.findIndex(

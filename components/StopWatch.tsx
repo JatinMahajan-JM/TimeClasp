@@ -47,7 +47,7 @@ export default function StopWatch({ data }: TimerProps) {
       const updatedData = await updatedRes.json();
       setDataState(updatedData);
 
-      console.log(await res.json(), updatedData, dataState);
+      //, updatedData, dataState);
     }
     setIsActive((prevIsActive) => !prevIsActive);
   };
@@ -87,12 +87,12 @@ export default function StopWatch({ data }: TimerProps) {
     if (selectedTask && isActive) {
       let allocatedTime = selectedTask.timeAllocated;
       const [hours, minutes] = allocatedTime.split(":").map(Number);
-      console.log(hours, minutes);
+      //
       if (seconds !== 0) {
         //end - seconds
         const totalMilliseconds = hours * 60 * 60 * 1000 + minutes * 60 * 1000;
         timeTillCompletion = totalMilliseconds - seconds * 1000;
-        console.log(timeTillCompletion);
+        //
       }
       timeout = setTimeout(async () => {
         // let updateData = {
@@ -122,13 +122,13 @@ export default function StopWatch({ data }: TimerProps) {
           };
           return newDataState;
         });
-        console.log(dataState, "Modified");
+        //
       }, timeTillCompletion);
     }
     return () => clearTimeout(timeout);
   }, [isActive, selectedTask]);
 
-  console.log(seconds, dataState);
+  //
   const handleReset = () => {
     setIsActive(false);
     setSeconds(0);
@@ -154,7 +154,7 @@ export default function StopWatch({ data }: TimerProps) {
   //     const currentDate = new Date(Date.now());
   //     currentDate.setHours(hours);
   //     currentDate.setMinutes(minutes);
-  //     console.log(currentDate.getTime() - Date.now());
+  ////- Date.now());
   //     setSeconds((currentDate.getTime() - Date.now()) / 1000);
   //   }
   // }, []);
@@ -190,11 +190,11 @@ export default function StopWatch({ data }: TimerProps) {
   const [subTaskToggle, setSubTaskToggle] = useState(false);
   const [subTasks, setSubTasks] = useState<Subtask[]>([]);
   // const [selectedTask, setSelectedTask] = useState<{ [key: string]: any }>();
-  console.log(taskType, isActive);
+  //
 
   const newTaskHandler = (event: React.FormEvent<HTMLFormElement>) => {
     // const newTaskHandler = (FormData: FormData) => {
-    // console.log(FormData);
+    // //
     event.preventDefault();
     let timeAllocated = timeAllocatedRef.current?.value;
     if (
@@ -231,10 +231,10 @@ export default function StopWatch({ data }: TimerProps) {
         .padStart(2, "0")}`;
 
       timeAllocated = result;
-      console.log(timeAllocated);
+      //
     }
 
-    console.log(subTasksRef.current?.value);
+    //
     fetch("/api/task/addNewTask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -288,7 +288,7 @@ export default function StopWatch({ data }: TimerProps) {
           data: updateData,
         }),
       });
-      console.log(await res.json());
+      //);
       const updatedRes = await fetch("/api/task");
       const updatedData = await updatedRes.json();
       setDataState(updatedData);
@@ -297,7 +297,7 @@ export default function StopWatch({ data }: TimerProps) {
     setSelectedTask(selectedItem);
     setSeconds(selectedItem?.timeWorked);
   };
-  console.log(selectedTask);
+  //
 
   const handleDone = async () => {
     setIsActive(false);
@@ -328,7 +328,7 @@ export default function StopWatch({ data }: TimerProps) {
       };
       return newDataState;
     });
-    console.log(dataState, "Modified");
+    //
   };
 
   return (
