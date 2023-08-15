@@ -1,38 +1,24 @@
-import AllTasksClient from "@/components/AllTasksClient";
 import TasksMain from "@/components/TasksMain";
-import { headers } from "next/headers";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
 
 const url = process.env.REQ_URL;
-async function getAllTasks() {
-  const res = await fetch(`${url}/api/task`, {
-    next: { revalidate: 300000 },
-  });
-  const data = await res.json();
-  if (data.allTasks) return data.allTasks;
-  else return [];
-}
 
-async function getUpdatedData() {
-  const res = await fetch(`${url}/api/task`, {
+async function getUpdatedData(session: any) {
+  const res = await fetch(`${url}/api/task/${session.user.id}`, {
     cache: "no-store",
-    headers: headers(),
   });
-  // //
   const data = await res.json();
   if (data.allTasks) return data.allTasks;
   else return [];
 }
 
 export default async function MyTasks() {
-  3;
-  let allTasks = await getAllTasks();
-  let updatedData = await getUpdatedData();
-  if (updatedData) allTasks = updatedData;
+  const session = await getServerSession(authOptions);
+  let updatedData = await getUpdatedData(session);
   return (
     <div className="w-full">
-      {/* <h1>My Tasks</h1> */}
-      {/* <Stopwatch data={allTasks} /> */}
-      <TasksMain data={allTasks} />
+      <TasksMain data={updatedData} />
     </div>
   );
 }

@@ -2,29 +2,10 @@ import { connectToDatabase } from "@/dbConfig/dbConfig";
 import taskModel from "@/models/taskModel";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import UserModel from "@/models/userModel";
 
 connectToDatabase();
-
-export async function GET() {
-    try {
-        const session: any = await getServerSession(authOptions);
-        ////
-        let allTasks: any = [];
-        if (session) {
-            allTasks = await UserModel.findOne({ email: session.user?.email }).populate("taskList");
-            allTasks = allTasks.taskList;
-        }
-        // else allTasks = { taskList: [] }
-        ////
-        // const allTasks = await taskModel.find();
-        ////
-        return NextResponse.json({ allTasks }, { status: 200 })
-    } catch (err: any) {
-        return NextResponse.json({ err }, { status: 404 })
-    }
-}
 
 export async function PUT(request: NextRequest) {
     const { _id, data } = await request.json();

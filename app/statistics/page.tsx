@@ -1,18 +1,22 @@
 import BarChart from "@/components/BarChart";
 import SplineChart from "@/components/SplineChart";
 import TimeStats from "@/components/TimeStats";
-import { headers } from "next/headers";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
 
 const url = process.env.REQ_URL;
 async function getUpdatedData() {
-  const res = await fetch(`${url}/api/time/getTime`, {
+  const session = await getServerSession(authOptions);
+  // const res = await fetch(`${url}/api/time/getTime`, {
+  //   next: { revalidate: 180 },
+  //   method: "POST",
+  //   headers: { "Content-Type": "application/json" },
+  //   // headers: headers(),
+  // });
+  const res = await fetch(`${url}/api/time/${session?.user?.id}/stats`, {
     next: { revalidate: 180 },
-    method: "POST",
-    // headers: { "Content-Type": "application/json" },
-    headers: headers(),
   });
   const data = await res.json();
-  //
   if (data.allTasks) return data.allTasks;
   else return [];
 }
