@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 connectToDatabase()
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     try {
