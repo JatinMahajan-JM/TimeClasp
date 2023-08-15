@@ -1,3 +1,5 @@
+import { connectToDatabase } from "@/dbConfig/dbConfig";
+import { authOptions } from "@/lib/auth";
 import UserModel from "@/models/userModel";
 import { stripe } from "@/utils/stripe"
 import { getServerSession } from "next-auth";
@@ -10,8 +12,10 @@ interface User {
     image?: string | null | undefined;
 }
 
+
 export async function POST(req: NextRequest) {
-    const session = await getServerSession();
+    await connectToDatabase();
+    const session = await getServerSession(authOptions);
     if (req.method === "POST") {
         // 1. Retrieve the information from request
         // const { data: price, metadata = {} } = await req.json();

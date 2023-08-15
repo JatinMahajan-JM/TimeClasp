@@ -2,9 +2,9 @@ import { connectToDatabase } from "@/dbConfig/dbConfig";
 import timeModel from "@/models/timeModel";
 import { NextResponse } from "next/server";
 
-connectToDatabase()
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
+    await connectToDatabase()
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     try {
