@@ -8,7 +8,7 @@ async function getUpdatedData() {
   const res = await fetch(`${url}/api/time/getTime`, {
     next: { revalidate: 180 },
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    // headers: { "Content-Type": "application/json" },
     // headers: headers(),
   });
   const data = await res.json();
