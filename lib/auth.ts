@@ -15,6 +15,7 @@ export const authOptions: NextAuthOptions =
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async session({ session }: { session: any }) {
+            await connectToDatabase();
             // store the user id from MongoDB to session
             ////
             const sessionUser = await UserModel.findOne({ email: session.user?.email });
