@@ -9,7 +9,7 @@ async function getUpdatedData() {
     next: { revalidate: 180 },
     method: "POST",
     // headers: { "Content-Type": "application/json" },
-    // headers: headers(),
+    headers: headers(),
   });
   const data = await res.json();
   //
