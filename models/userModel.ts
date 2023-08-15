@@ -1,4 +1,5 @@
 import { Schema, model, models } from 'mongoose';
+import taskModel from "./taskModel";
 
 const UserSchema = new Schema({
     email: {
@@ -11,7 +12,8 @@ const UserSchema = new Schema({
         required: [true, 'Username is required!'],
         match: [/^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/, "Username invalid, it should contain 8-20 alphanumeric letters and be unique!"]
     },
-    taskList: [{ type: Schema.Types.ObjectId, ref: "taskModel" }]
+    taskList: [{ type: Schema.Types.ObjectId, ref: taskModel }]
+    //changed from taskModel to file
 });
 
 const UserModel = models.User || model("User", UserSchema);
