@@ -6,6 +6,7 @@ import { Ctx } from "./TasksMain";
 import { updateTaskData } from "@/apiCustom/tasksApi";
 
 function AllTasks({ mod }: { mod: (task: any, modification: string) => void }) {
+  console.log("AllTasks");
   // //
   // const { data, selectedTask, isActive, seconds, dispatch } = useContext(Ctx);
   const { data, selectedTask, isActive, dispatch, setSeconds } =

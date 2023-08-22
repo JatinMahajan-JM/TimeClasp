@@ -88,7 +88,8 @@ export default function Timer({ seconds, mod }: timerProps) {
 
   const handleStartStop = async () => {
     if (!selectedTask) return;
-    if (seconds !== 0 && selectedTask) {
+    // if (seconds !== 0 && selectedTask) {
+    if (selectedTask) {
       let updateData: updateDataType = {
         timeWorked: seconds,
         timerStartTime: Date.now(),

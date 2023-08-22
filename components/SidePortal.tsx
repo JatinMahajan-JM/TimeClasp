@@ -22,13 +22,13 @@ export default function SidePortal({ sections, click }: SidePortalProps) {
             // onClick={click}
             //   key={child.id}
             href={`${child?.href}`}
-            className={`flex items-center gap-3 p-2 ${
+            className={`flex items-center gap-3 p-2 transition-all duration-500 border-solid border-l-2 ${
               path === child?.href
-                ? "bg-varPrimary border-solid border-l-2 border-lightBlue"
-                : ""
+                ? "border-lightBlue bg-varPrimary"
+                : " border-transparent"
             }`}
           >
-            <p>
+            {/* <p>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -36,11 +36,15 @@ export default function SidePortal({ sections, click }: SidePortalProps) {
                 strokeWidth="1.5"
                 stroke="currentColor"
                 className="w-4 h-4"
-              >
-                {child.icon}
-              </svg>
-            </p>
-            <p className="text-base">{child.title}</p>
+              > */}
+            {/* <> */}
+            {/* <p className="h-6">{child.icon}</p> */}
+            {/* </> */}
+            {/* </svg> */}
+            {/* </p> */}
+            <span className="relative -top-[1px]">{child.icon}</span>
+            <span className="text-sm">{child.title}</span>
+            {/* <p className="text-base h-6">{child.title}</p> */}
           </Link>
         </button>
       ))}

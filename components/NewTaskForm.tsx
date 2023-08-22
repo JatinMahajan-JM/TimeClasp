@@ -183,6 +183,7 @@ export function NewTaskForm({ edit, task, mod }: NewTaskProps) {
       const response = await updateTaskData({
         _id: task?._id,
         data: { ...taskDataArgs, isCompleted },
+        removeRange: task?.taskType === 0 && taskType === true,
       });
       //
       if (response.task) {

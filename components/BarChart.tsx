@@ -166,7 +166,7 @@ const BarChart = ({ dataDB }: { dataDB: any }) => {
             .attr("text-anchor", "middle")
             .attr("font-size", "12px")
             .attr("fill", "white")
-            .text(d.taskName + " : " + d.hoursWorked + " hours");
+            .text(d.hoursWorked + " hours : " + d.taskName);
         })
         .on("mouseleave", function () {
           d3.select(this).transition().duration(10).attr("opacity", "1");
