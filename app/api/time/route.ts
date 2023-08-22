@@ -36,7 +36,8 @@ export async function PUT(request: NextRequest) {
         //     }
         // )
         // First, try to update the 'timeWorkedToday' field
-        let a = await timeModel.findOne({ date: date.slice(0, 10) });
+        // let a = await timeModel.findOne({ date: date.slice(0, 10) });
+        let a = await timeModel.findOne({ date: date.slice(0, 10), userId: session.user.id });
         if (a) {
             const taskToUpdate = a.tasks.find((task: any) => task.taskId.equals(_id));
             if (taskToUpdate) {

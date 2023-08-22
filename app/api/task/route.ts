@@ -8,10 +8,15 @@ import UserModel from "@/models/userModel";
 connectToDatabase();
 
 export async function PUT(request: NextRequest) {
-    const { _id, data } = await request.json();
+    const { _id, data, removeRange } = await request.json();
     ////
     let obj: any = { $set: data };
-    if (!data.startTime || !data.endTime) {
+    // if (!data.startTime || !data.endTime) {
+    //     delete data.startTime;
+    //     delete data.endTime;
+    //     obj = { $set: data, $unset: { startTime: 1, endTime: 1 } }
+    // }
+    if (removeRange) {
         delete data.startTime;
         delete data.endTime;
         obj = { $set: data, $unset: { startTime: 1, endTime: 1 } }
