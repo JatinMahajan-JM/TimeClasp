@@ -11,6 +11,9 @@ import MainNav from "@/components/MainNav";
 import { Toaster } from "@/components/ui/toaster";
 import { authOptions } from "@/lib/auth";
 import { Session } from "next-auth";
+import { Suspense } from "react";
+import Loading from "./loading";
+import LoadingII from "@/components/ui/LoadingII";
 
 const inter = Josefin_Sans({ subsets: ["latin"], weight: ["500", "700"] });
 // const inter = Roboto({ subsets: ["latin"], weight: "900" });
@@ -47,7 +50,7 @@ export default async function RootLayout({
       <body
         className={
           inter.className +
-          " grid lg:grid-cols-[300px_1fr] md:grid-cols-[240px_1fr]"
+          " grid lg:grid-cols-[300px_1fr] md:grid-cols-[240px_1fr] transition-all"
         }
       >
         <AuthProvider session={session}>
@@ -57,12 +60,14 @@ export default async function RootLayout({
               <SidePortal sections={sidePortalConfig} />
             </div>
           </aside>
-          <main className="p-3 md:pl-8 py-8">
-            <nav className="add-border p-2 mb-2 h-[3.14rem] lg:h-auto lg:hidden block">
-              <MainNav />
-            </nav>
-            {children}
-          </main>
+          <Suspense fallback={<Loading />}>
+            <main className="p-3 md:pl-8 py-8">
+              <nav className="add-border p-2 mb-2 h-[3.14rem] lg:h-auto lg:hidden block">
+                <MainNav />
+              </nav>
+              {children}
+            </main>
+          </Suspense>
           <Toaster />
         </AuthProvider>
       </body>
