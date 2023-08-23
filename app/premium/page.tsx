@@ -47,7 +47,7 @@ export default function Premium() {
     setLoading(false);
   };
   return (
-    <button onClick={handleSubmit} disabled={loading}>
+    <button onClick={handleSubmit} disabled={loading} className="add-border">
       Pay $4
     </button>
   );
