@@ -68,6 +68,7 @@ export default async function RootLayout({
               </nav>
               {children}
             </main>
+            {/* <Loading /> */}
           </Suspense>
           <Toaster />
         </AuthProvider>

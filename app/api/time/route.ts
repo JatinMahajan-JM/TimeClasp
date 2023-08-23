@@ -52,7 +52,8 @@ export async function PUT(request: NextRequest) {
             a = new timeModel({
                 date: date.slice(0, 10),
                 tasks: [{ taskId: _id, timeWorkedToday }],
-                userId: session.user.id
+                userId: session.user.id,
+                totalTimeWorked: timeWorkedToday
             });
         }
 
