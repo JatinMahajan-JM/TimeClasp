@@ -1,8 +1,13 @@
 import BarChart from "@/components/BarChart";
-import SplineChart from "@/components/SplineChart";
+// import SplineChart from "@/components/SplineChart";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
+const SplineChart = dynamic(() => import("@/components/SplineChart"), {
+  loading: () => <LoadingSpinner />,
+});
 import TimeStats from "@/components/TimeStats";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
+import dynamic from "next/dynamic";
 
 const url = process.env.REQ_URL;
 async function getUpdatedData() {
