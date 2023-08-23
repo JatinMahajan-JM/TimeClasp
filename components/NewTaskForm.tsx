@@ -359,6 +359,7 @@ export function NewTaskForm({ edit, task, mod }: NewTaskProps) {
                 </SelectTrigger>
                 <SelectContent className="bg-varPrimary border-none">
                   <SelectItem value="r1">Hourly</SelectItem>
+                  <SelectItem value="r1">Daily</SelectItem>
                   <SelectItem value="r2">Weeky</SelectItem>
                   <SelectItem value="r3">Monthly</SelectItem>
                   <SelectItem value="r4">Yearly</SelectItem>

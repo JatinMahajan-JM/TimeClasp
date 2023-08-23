@@ -3,7 +3,7 @@ import taskModel from "./taskModel";
 import UserModel from "./userModel";
 
 const timeSchema = new mongoose.Schema({
-    date: { type: String, required: true, unique: true }, // Unique document per day
+    date: { type: String, required: true }, // Unique document per day
     tasks: [
         {
             taskId: { type: mongoose.Schema.Types.ObjectId, ref: taskModel, required: true },

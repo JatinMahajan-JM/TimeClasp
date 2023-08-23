@@ -391,8 +391,8 @@ export default function AllTasksClient({
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                    <DialogContent className="bg-primary add-border px-2 py-10">
-                      <DialogHeader>
+                    <DialogContent className="bg-primary add-border px-2 py-10 max-h-screen overflow-y-scroll">
+                      <DialogHeader className="w-11/12 md:w-full m-auto text-left">
                         <DialogTitle></DialogTitle>
                         {/* <DialogDescription> */}
                         <NewTaskForm mod={mod} edit={true} task={task} />
