@@ -14,6 +14,7 @@ import { Session } from "next-auth";
 import { Suspense } from "react";
 import Loading from "./loading";
 import LoadingII from "@/components/ui/LoadingII";
+import AuthenticationPage from "./_authentication/SignInPage";
 
 const inter = Josefin_Sans({ subsets: ["latin"], weight: ["500", "700"] });
 // const inter = Roboto({ subsets: ["latin"], weight: "900" });
@@ -99,8 +100,9 @@ export default async function RootLayout({
     main = (
       <body className="grid content-center justify-center gap-4 items-center w-screen h-screen">
         <AuthProvider session={session}>
-          <h1 className="font-bold text-lg ">SIGN IN TO ACCESS THE APP</h1>
-          <SignInButton />
+          {/* <h1 className="font-bold text-lg ">SIGN IN TO ACCESS THE APP</h1>
+          <SignInButton /> */}
+          <AuthenticationPage />
         </AuthProvider>
       </body>
     );

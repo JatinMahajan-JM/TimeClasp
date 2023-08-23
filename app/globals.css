@@ -247,7 +247,7 @@ button {
 .loading div {
   width: 6px;
   height: 6px;
-  background: #fff;
+  background: gainsboro;
   border-radius: 100%;
   float: left;
   margin-bottom: 12px;
