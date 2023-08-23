@@ -25,15 +25,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   return (
     <div className="flex items-center justify-center gap-4">
       <p>{desc}</p>
-      <div className={`animate-spin ${getSizeClasses()} ${color}`}>
-        <svg
-          className="fill-current"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-        >
-          <path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zM2 12a10 10 0 0010 10 1 1 0 001-1 1 1 0 00-1-1 8 8 0 11-4.58-7.14" />
-        </svg>
-      </div>
+      <div className="w-6 h-6 border-4 border-dashed rounded-full animate-spin text-c4"></div>
     </div>
   );
 };

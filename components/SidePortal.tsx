@@ -43,7 +43,7 @@ export default function SidePortal({ sections, click }: SidePortalProps) {
             {/* </svg> */}
             {/* </p> */}
             <span className="relative -top-[1px]">{child.icon}</span>
-            <span className="text-sm">{child.title}</span>
+            <span className="text-sm font-bold">{child.title}</span>
             {/* <p className="text-base h-6">{child.title}</p> */}
           </Link>
         </button>

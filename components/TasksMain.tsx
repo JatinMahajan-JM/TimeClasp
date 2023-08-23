@@ -353,6 +353,7 @@ export default function TasksMain({ data }: TimerProps) {
         type: "modifyData",
         payload: { modification, task },
       });
+      setModal(false);
     },
     [dispatchFn]
   );
